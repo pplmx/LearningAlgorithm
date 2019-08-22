@@ -79,53 +79,53 @@ def linear_threshold(graph, seeds, steps=0):
             raise Exception("edge influence:", directed_graph[edge[0]][edge[1]]['influence'], "cannot be larger than 1")
 
     # perform diffusion
-    A = copy.deepcopy(seeds)
+    seeds_duplicate = copy.deepcopy(seeds)
     if steps <= 0:
         # perform diffusion until no more nodes can be activated
-        return _diffuse_all(directed_graph, A)
+        return _diffuse_all(directed_graph, seeds_duplicate)
     # perform diffusion for at most "steps" rounds only
-    return _diffuse_k_rounds(directed_graph, A, steps)
+    return _diffuse_k_rounds(directed_graph, seeds_duplicate, steps)
 
 
-def _diffuse_all(G, A):
-    layer_i_nodes = [[i for i in A]]
+def _diffuse_all(graph, seeds):
+    layer_i_nodes = [[i for i in seeds]]
     while True:
-        len_old = len(A)
-        A, activated_nodes_of_this_round = _diffuse_one_round(G, A)
+        len_old = len(seeds)
+        seeds, activated_nodes_of_this_round = _diffuse_one_round(graph, seeds)
         layer_i_nodes.append(activated_nodes_of_this_round)
-        if len(A) == len_old:
+        if len(seeds) == len_old:
             break
     return layer_i_nodes
 
 
-def _diffuse_k_rounds(G, A, steps):
-    layer_i_nodes = [[i for i in A]]
-    while steps > 0 and len(A) < len(G):
-        len_old = len(A)
-        A, activated_nodes_of_this_round = _diffuse_one_round(G, A)
+def _diffuse_k_rounds(graph, seeds, steps):
+    layer_i_nodes = [[i for i in seeds]]
+    while steps > 0 and len(seeds) < len(graph):
+        len_old = len(seeds)
+        seeds, activated_nodes_of_this_round = _diffuse_one_round(graph, seeds)
         layer_i_nodes.append(activated_nodes_of_this_round)
-        if len(A) == len_old:
+        if len(seeds) == len_old:
             break
         steps -= 1
     return layer_i_nodes
 
 
-def _diffuse_one_round(G, A):
+def _diffuse_one_round(graph, seeds):
     activated_nodes_of_this_round = set()
-    for s in A:
-        nbs = G.successors(s)
-        for nb in nbs:
-            if nb in A:
+    for seed in seeds:
+        neighbor_list = graph.successors(seed)
+        for nb in neighbor_list:
+            if nb in seeds:
                 continue
-            active_nb = list(set(G.predecessors(nb)).intersection(set(A)))
-            if _influence_sum(G, active_nb, nb) >= G.node[nb]['threshold']:
+            active_nb = list(set(graph.predecessors(nb)).intersection(set(seeds)))
+            if _influence_sum(graph, active_nb, nb) >= graph.node[nb]['threshold']:
                 activated_nodes_of_this_round.add(nb)
-    A.extend(list(activated_nodes_of_this_round))
-    return A, list(activated_nodes_of_this_round)
+    seeds.extend(list(activated_nodes_of_this_round))
+    return seeds, list(activated_nodes_of_this_round)
 
 
-def _influence_sum(G, froms, to):
+def _influence_sum(graph, from_list, to):
     influence_sum = 0.0
-    for f in froms:
-        influence_sum += G[f][to]['influence']
+    for f in from_list:
+        influence_sum += graph[f][to]['influence']
     return influence_sum
