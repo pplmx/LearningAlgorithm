@@ -182,6 +182,10 @@ def is_can_be_activated(graph, node):
     influence_factor = 0
     for u, v, influence in graph.in_edges(node, data='influence'):
         influence_factor += influence
+    # calculate the sum of the weights of all the in degrees of node
+    # graph.in_degree(node, weight="influence")
+    # calculate the sum of the weights of all the out degrees of node
+    # graph.out_degree(node, weight="influence")
     if influence_factor >= graph.nodes[node]['threshold']:
         return True
     return False
