@@ -75,15 +75,35 @@ def linear_threshold(graph, seeds, steps=0):
     >>> [e for e in graph.edges]
     [(0, 1), (1, 2), (2, 3)]
     """
-    for edge in directed_graph.edges:  # 对所有的边进行循环
+    # =========traverse all edges=========
+    # Solution 1:
+    for node, nbr_dict in directed_graph.adjacency():
+        for nbr, edge_attr in nbr_dict.items():
+            if 'influence' not in edge_attr:
+                pass
+
+    # Solution 2:
+    for u, v, influence in directed_graph.edges(data='influence'):
+        if influence is None:
+            out_degree = directed_graph.out_degree(u)
+            out_degree_sum = None
+
+            directed_graph[u][v]['influence'] = out_degree / out_degree_sum
+        elif influence > 1:
+            raise Exception("Edge error: The influence of edge({}, {}) cannot be larger than 1.".format(u, v))
+
+    # for directed graph, directed_graph.edges only contains out edges without in edges
+    for edge in directed_graph.edges:
         if 'influence' not in directed_graph[edge[0]][edge[1]]:
-            out_degree = out_degree_list[edge[0]]  # 获取节点e[0]的出度
-            in_edges = in_edge_list._adjdict[edge[1]]  # 获取节点e[1]的所有的入边
+            out_degree = out_degree_list[edge[0]]  # 获取节点edge[0]的出度
+            # in_edges = in_edge_list._adjdict[edge[1]]  # 获取节点edge[1]的所有的入边
+            # in_edges = directed_graph.adj[edge[1]]
+            in_edges = directed_graph.in_edges(edge[1])  # 获取节点edge[1]的所有的入边
             edges_dict = dict(in_edges)
-            in_all_edges = list(edges_dict.keys())  # 获取节点e[1]的所有入边节点并存入列表
+            in_edges_all = list(edges_dict.keys())  # 获取节点edge[1]的所有入边节点并存入列表
             out_degree_sum = 0
-            for i in in_all_edges:  # 求节点e[1]所有入边节点的出度和
-                out_degree_sum = out_degree_sum + out_degree_list[i]
+            for i in in_edges_all:  # 求节点e[1]所有入边节点的出度和
+                out_degree_sum += out_degree_list[i]
             directed_graph[edge[0]][edge[1]]['influence'] = out_degree / out_degree_sum
         elif directed_graph[edge[0]][edge[1]]['influence'] > 1:
             raise Exception("edge influence:", directed_graph[edge[0]][edge[1]]['influence'], "cannot be larger than 1")
