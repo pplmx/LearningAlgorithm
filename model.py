@@ -142,3 +142,46 @@ def _influence_sum(graph, from_list, to):
     for f in from_list:
         influence_sum += graph[f][to]['influence']
     return influence_sum
+
+
+def diffuse(graph, seeds, steps=0):
+    if steps <= 0:
+        pass
+
+
+def diffuse_all(graph, seeds):
+    pass
+
+
+def diffuse_k_rounds(graph, seeds, steps):
+    pass
+
+
+def diffuse_one_round(graph, seeds):
+    activated_nodes_of_this_round = set()
+    for seed in seeds:
+        successor_list = graph.successors(seed)
+        for successor in successor_list:
+            if successor in seeds:
+                continue
+            if is_can_be_activated(graph, successor):
+                activated_nodes_of_this_round.add(successor)
+    seeds.extend(list(activated_nodes_of_this_round))
+    return seeds, list(activated_nodes_of_this_round)
+
+
+def is_can_be_activated(graph, node):
+    """
+        ######## To determine if a node can be activated ########
+        if node's all in-edges' influence_sum >= node's threshold,
+        it's can be activated (diffused).
+    :param graph:
+    :param node:
+    :return:
+    """
+    influence_factor = 0
+    for u, v, influence in graph.in_edges(node, data='influence'):
+        influence_factor += influence
+    if influence_factor >= graph.nodes[node]['threshold']:
+        return True
+    return False
