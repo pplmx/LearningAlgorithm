@@ -9,9 +9,9 @@ import networkx as nx
 __all__ = ['linear_threshold']
 
 
-# -------------------------------------------------------------------------
-#  Some Famous Diffusion Models
-# -------------------------------------------------------------------------
+# -----------------------------------
+#  Diffusion Models
+# -----------------------------------
 
 def linear_threshold(graph, seeds, steps=0):
     """
@@ -36,9 +36,10 @@ def linear_threshold(graph, seeds, steps=0):
        default value is given (0.5).
     2. Each edge is supposed to have an attribute "influence".  If not, the
        default value is given (out_deg / out_deg_sum)
+    3. edge(u, v)'s influence = u's out_deg / u's all adjacency in_edges' nodes' out_deg_sum
     """
     if type(graph) == nx.MultiGraph or type(graph) == nx.MultiDiGraph:
-        raise Exception("linear_threshold() is not defined for graphs with multiedges.")
+        raise Exception("linear_threshold() is not defined for graphs with multi-edges.")
 
     # make sure the seeds are in the graph
     for seed in seeds:
@@ -47,66 +48,48 @@ def linear_threshold(graph, seeds, steps=0):
 
     # change to directed graph
     if not graph.is_directed():
-        # directed_graph = G.to_directed()
+        # directed_graph = graph.to_directed()
         directed_graph = nx.DiGraph(graph)
     else:
         directed_graph = copy.deepcopy(graph)
 
-    # init thresholds
+    # >>>>>>>>>> init thresholds <<<<<<<<<<
     """
     >>> list(graph.nodes)
     [0, 1, 2]
     >>> list(graph)
     [0, 1, 2]
     """
-    for i in list(directed_graph.nodes):
-        if 'threshold' not in directed_graph.nodes[i]:
+    for i, threshold in directed_graph.nodes(data='threshold'):
+        if threshold is None:
             directed_graph.nodes[i]['threshold'] = 0.5
-        elif directed_graph.nodes[i]['threshold'] > 1:
-            raise Exception("node threshold:", directed_graph.nodes[i]['threshold'], "cannot be larger than 1")
+        elif threshold > 1:
+            raise Exception("Node error: The threshold of node-{} cannot be larger than 1.".format(i))
 
-    # init influences
-
-    # in_deg_all = directed_graph.in_degree()        #获取所有节点的入度
-    # noinspection PyCallingNonCallable
-    out_degree_list = list(directed_graph.out_degree(list(directed_graph)))  # 获取所有节点的出度
-    in_edge_list = directed_graph.in_edges  # 获取所有的入边
+    # >>>>>>>>>> init influences <<<<<<<<<<
     """
     >>> [e for e in graph.edges]
     [(0, 1), (1, 2), (2, 3)]
     """
-    # =========traverse all edges=========
+    # ===traverse all edges===
     # Solution 1:
-    for node, nbr_dict in directed_graph.adjacency():
-        for nbr, edge_attr in nbr_dict.items():
-            if 'influence' not in edge_attr:
-                pass
+    # for node, nbr_dict in directed_graph.adjacency():
+    #     for nbr, edge_attr in nbr_dict.items():
+    #         if 'influence' not in edge_attr:
+    #             pass
 
     # Solution 2:
     for u, v, influence in directed_graph.edges(data='influence'):
         if influence is None:
+            # noinspection PyCallingNonCallable
             out_degree = directed_graph.out_degree(u)
-            out_degree_sum = None
-
+            out_degree_sum = 0
+            for src, dst in directed_graph.in_edges(v):
+                # noinspection PyCallingNonCallable
+                out_degree_sum += directed_graph.out_degree(src)
             directed_graph[u][v]['influence'] = out_degree / out_degree_sum
         elif influence > 1:
             raise Exception("Edge error: The influence of edge({}, {}) cannot be larger than 1.".format(u, v))
-
-    # for directed graph, directed_graph.edges only contains out edges without in edges
-    for edge in directed_graph.edges:
-        if 'influence' not in directed_graph[edge[0]][edge[1]]:
-            out_degree = out_degree_list[edge[0]]  # 获取节点edge[0]的出度
-            # in_edges = in_edge_list._adjdict[edge[1]]  # 获取节点edge[1]的所有的入边
-            # in_edges = directed_graph.adj[edge[1]]
-            in_edges = directed_graph.in_edges(edge[1])  # 获取节点edge[1]的所有的入边
-            edges_dict = dict(in_edges)
-            in_edges_all = list(edges_dict.keys())  # 获取节点edge[1]的所有入边节点并存入列表
-            out_degree_sum = 0
-            for i in in_edges_all:  # 求节点e[1]所有入边节点的出度和
-                out_degree_sum += out_degree_list[i]
-            directed_graph[edge[0]][edge[1]]['influence'] = out_degree / out_degree_sum
-        elif directed_graph[edge[0]][edge[1]]['influence'] > 1:
-            raise Exception("edge influence:", directed_graph[edge[0]][edge[1]]['influence'], "cannot be larger than 1")
 
     # perform diffusion
     seeds_duplicate = copy.deepcopy(seeds)
