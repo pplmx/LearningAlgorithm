@@ -53,6 +53,12 @@ def linear_threshold(graph, seeds, steps=0):
         directed_graph = copy.deepcopy(graph)
 
     # init thresholds
+    """
+    >>> list(graph.nodes)
+    [0, 1, 2]
+    >>> list(graph)
+    [0, 1, 2]
+    """
     for i in list(directed_graph.nodes):
         if 'threshold' not in directed_graph.nodes[i]:
             directed_graph.nodes[i]['threshold'] = 0.5
@@ -63,18 +69,22 @@ def linear_threshold(graph, seeds, steps=0):
 
     # in_deg_all = directed_graph.in_degree()        #获取所有节点的入度
     # noinspection PyCallingNonCallable
-    out_deg_list = list(directed_graph.out_degree(list(directed_graph)))  # 获取所有节点的出度
-    in_edges_all = directed_graph.in_edges  # 获取所有的入边
+    out_degree_list = list(directed_graph.out_degree(list(directed_graph)))  # 获取所有节点的出度
+    in_edge_list = directed_graph.in_edges  # 获取所有的入边
+    """
+    >>> [e for e in graph.edges]
+    [(0, 1), (1, 2), (2, 3)]
+    """
     for edge in directed_graph.edges:  # 对所有的边进行循环
         if 'influence' not in directed_graph[edge[0]][edge[1]]:
-            out_deg = out_deg_list[edge[0]]  # 获取节点e[0]的出度
-            in_edges = in_edges_all._adjdict[edge[1]]  # 获取节点e[1]的所有的入边
+            out_degree = out_degree_list[edge[0]]  # 获取节点e[0]的出度
+            in_edges = in_edge_list._adjdict[edge[1]]  # 获取节点e[1]的所有的入边
             edges_dict = dict(in_edges)
             in_all_edges = list(edges_dict.keys())  # 获取节点e[1]的所有入边节点并存入列表
-            out_deg_sum = 0
+            out_degree_sum = 0
             for i in in_all_edges:  # 求节点e[1]所有入边节点的出度和
-                out_deg_sum = out_deg_sum + out_deg_list[i]
-            directed_graph[edge[0]][edge[1]]['influence'] = out_deg / out_deg_sum
+                out_degree_sum = out_degree_sum + out_degree_list[i]
+            directed_graph[edge[0]][edge[1]]['influence'] = out_degree / out_degree_sum
         elif directed_graph[edge[0]][edge[1]]['influence'] > 1:
             raise Exception("edge influence:", directed_graph[edge[0]][edge[1]]['influence'], "cannot be larger than 1")
 
