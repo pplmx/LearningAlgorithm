@@ -27,16 +27,16 @@ class MyTestCase(unittest.TestCase):
         self.dg.nodes[5]['threshold'] = .5
         self.dg.nodes[6]['threshold'] = .3
 
-    def test_linear_threshold(self):
+    def test_linear_threshold_directed_graph(self):
         print(linear_threshold(self.dg, [1]))
         print(linear_threshold(self.dg, [1, 4]))
         print(linear_threshold(self.dg, [1, 6]))
 
-    def test_linear_threshold_with_step(self):
+    def test_linear_threshold_directed_graph_with_step(self):
         print(linear_threshold(self.dg, [1], 1))
         print(linear_threshold(self.dg, [1], 2))
 
-    def test_linear_threshold_graph_without_attribute(self):
+    def test_linear_threshold_undirected_graph(self):
         self.dg = networkx.Graph()
         self.dg.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
 
