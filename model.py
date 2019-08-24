@@ -82,14 +82,19 @@ def linear_threshold(graph, seeds, steps=0):
     # Solution 2:
     for u, v, influence in directed_graph.edges(data='influence'):
         if influence is None:
+            # ========== influence = out_degree / out_degree_sum ==========
+            # # noinspection PyCallingNonCallable
+            # out_degree = directed_graph.out_degree(u)
+            # # the sum of the out-degree of all in-edge nodes of v
+            # out_degree_sum = 0
+            # for src, dst in directed_graph.in_edges(v):
+            #     # noinspection PyCallingNonCallable
+            #     out_degree_sum += directed_graph.out_degree(src)
+            # directed_graph[u][v]['influence'] = out_degree / out_degree_sum
+
+            # ========== influence = 1 / in_degree ==========
             # noinspection PyCallingNonCallable
-            out_degree = directed_graph.out_degree(u)
-            # the sum of the out-degree of all in-edge nodes of v
-            out_degree_sum = 0
-            for src, dst in directed_graph.in_edges(v):
-                # noinspection PyCallingNonCallable
-                out_degree_sum += directed_graph.out_degree(src)
-            directed_graph[u][v]['influence'] = out_degree / out_degree_sum
+            directed_graph[u][v]['influence'] = 1 / directed_graph.in_degree(v)
         elif influence > 1:
             raise Exception("Edge error: The influence of edge({}, {}) cannot be larger than 1.".format(u, v))
 
