@@ -28,8 +28,8 @@ def linear_threshold(graph, seeds, steps=0):
     Return
     ------
     layer_i_nodes : list of list of activated nodes
-      layer_i_nodes[0]: the seeds
-      layer_i_nodes[k]: the nodes activated at the kth diffusion step
+      layer_i_nodes[0]: the origin seeds
+      layer_i_nodes[k]: the activated nodes what are activated at the kth diffusion step
     Notes
     -----
     1. Each node is supposed to have an attribute "threshold".  If not, the
@@ -41,7 +41,8 @@ def linear_threshold(graph, seeds, steps=0):
     if type(graph) == nx.MultiGraph or type(graph) == nx.MultiDiGraph:
         raise Exception("linear_threshold() is not defined for graphs with multi-edges.")
 
-    # make sure the seeds are in the graph
+    # make sure the seeds are in the graph and unique
+    seeds = list(set(seeds))
     for seed in seeds:
         if seed not in graph.nodes():
             raise Exception("seed", seed, "is not in graph")
@@ -83,6 +84,7 @@ def linear_threshold(graph, seeds, steps=0):
         if influence is None:
             # noinspection PyCallingNonCallable
             out_degree = directed_graph.out_degree(u)
+            # the sum of the out-degree of all in-edge nodes of v
             out_degree_sum = 0
             for src, dst in directed_graph.in_edges(v):
                 # noinspection PyCallingNonCallable
@@ -93,99 +95,83 @@ def linear_threshold(graph, seeds, steps=0):
 
     # perform diffusion
     seeds_duplicate = copy.deepcopy(seeds)
+    return diffuse(directed_graph, seeds_duplicate, steps)
+
+
+def diffuse(directed_graph, seeds, steps=0):
     if steps <= 0:
         # perform diffusion until no more nodes can be activated
-        return _diffuse_all(directed_graph, seeds_duplicate)
+        return diffuse_all(directed_graph, seeds)
     # perform diffusion for at most "steps" rounds only
-    return _diffuse_k_rounds(directed_graph, seeds_duplicate, steps)
+    return diffuse_k_rounds(directed_graph, seeds, steps)
 
 
-def _diffuse_all(graph, seeds):
+def diffuse_all(directed_graph, seeds):
     layer_i_nodes = [[i for i in seeds]]
-    while True:
-        len_old = len(seeds)
-        seeds, activated_nodes_of_this_round = _diffuse_one_round(graph, seeds)
+    while len(seeds) < len(directed_graph):
+        seeds, activated_nodes_of_this_round = diffuse_one_round(directed_graph, seeds)
         layer_i_nodes.append(activated_nodes_of_this_round)
-        if len(seeds) == len_old:
-            break
     return layer_i_nodes
 
 
-def _diffuse_k_rounds(graph, seeds, steps):
+def diffuse_k_rounds(directed_graph, seeds, steps):
     layer_i_nodes = [[i for i in seeds]]
-    while steps > 0 and len(seeds) < len(graph):
-        len_old = len(seeds)
-        seeds, activated_nodes_of_this_round = _diffuse_one_round(graph, seeds)
+    while steps > 0 and len(seeds) < len(directed_graph):
+        origin_len = len(seeds)
+        seeds, activated_nodes_of_this_round = diffuse_one_round(directed_graph, seeds)
         layer_i_nodes.append(activated_nodes_of_this_round)
-        if len(seeds) == len_old:
+        # if all nodes had been diffused, break the loop
+        if len(seeds) == origin_len:
             break
         steps -= 1
     return layer_i_nodes
 
 
-def _diffuse_one_round(graph, seeds):
+def diffuse_one_round(directed_graph, seeds):
+    """
+        To activate all seeds' successor once
+    :param directed_graph:
+    :param seeds:
+    :return:
+    """
     activated_nodes_of_this_round = set()
     for seed in seeds:
-        neighbor_list = graph.successors(seed)
-        for nb in neighbor_list:
-            if nb in seeds:
-                continue
-            active_nb = list(set(graph.predecessors(nb)).intersection(set(seeds)))
-            if _influence_sum(graph, active_nb, nb) >= graph.node[nb]['threshold']:
-                activated_nodes_of_this_round.add(nb)
-    seeds.extend(list(activated_nodes_of_this_round))
-    return seeds, list(activated_nodes_of_this_round)
-
-
-def _influence_sum(graph, from_list, to):
-    influence_sum = 0.0
-    for f in from_list:
-        influence_sum += graph[f][to]['influence']
-    return influence_sum
-
-
-def diffuse(graph, seeds, steps=0):
-    if steps <= 0:
-        pass
-
-
-def diffuse_all(graph, seeds):
-    pass
-
-
-def diffuse_k_rounds(graph, seeds, steps):
-    pass
-
-
-def diffuse_one_round(graph, seeds):
-    activated_nodes_of_this_round = set()
-    for seed in seeds:
-        successor_list = graph.successors(seed)
+        # get all successors of the seed (from seed to successor)
+        successor_list = directed_graph.successors(seed)
         for successor in successor_list:
             if successor in seeds:
                 continue
-            if is_can_be_activated(graph, successor):
+            # if successor is not in seed, to check whether it can be activated (diffused)
+            if is_can_be_activated(directed_graph, successor):
                 activated_nodes_of_this_round.add(successor)
+    # add the successors what are activated in this round to the seeds
+    # next round, use the new seeds what are extended to diffuse
     seeds.extend(list(activated_nodes_of_this_round))
     return seeds, list(activated_nodes_of_this_round)
 
 
-def is_can_be_activated(graph, node):
+def is_can_be_activated(directed_graph, node):
     """
         ######## To determine if a node can be activated ########
         if node's all in-edges' influence_sum >= node's threshold,
         it's can be activated (diffused).
-    :param graph:
+    :param directed_graph:
     :param node:
     :return:
     """
     influence_factor = 0
-    for u, v, influence in graph.in_edges(node, data='influence'):
+    for u, v, influence in directed_graph.in_edges(node, data='influence'):
         influence_factor += influence
     # calculate the sum of the weights of all the in degrees of node
-    # graph.in_degree(node, weight="influence")
+    # directed_graph.in_degree(node, weight="influence")
     # calculate the sum of the weights of all the out degrees of node
-    # graph.out_degree(node, weight="influence")
-    if influence_factor >= graph.nodes[node]['threshold']:
+    # directed_graph.out_degree(node, weight="influence")
+    if influence_factor >= directed_graph.nodes[node]['threshold']:
         return True
     return False
+
+
+if __name__ == '__main__':
+    dg = nx.DiGraph()
+    dg.add_weighted_edges_from([(1, 2, 0.5), (1, 3, 1.1), (4, 1, 2.3), (4, 2, 0.9)], weight='influence')
+    is_can_be_activated(dg, 4)
