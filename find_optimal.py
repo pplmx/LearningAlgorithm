@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import networkx as nx
-
 # 贪心算法
 from LT_model import linear_threshold
 
@@ -17,12 +15,9 @@ def _linear_clime(graph, k):  # 参数k-表示要获取的子节点的个数
         lengths = []  # 存储每个节点的激活列表长度
         data_list = []
         for i in all_nodes:  # 遍历所有的节点，分别求出每个节点对应的激活节点集以及激活节点集的长度
-            data = []
-            data.append(i)
             data_list.append(i)
-            data_test = seed_node_list + data
+            data_test = seed_node_list + [i]
             layers = linear_threshold(graph, data_test)
-            data.pop()
             del layers[-1]
             length = 0
             layer_data = []
@@ -46,20 +41,21 @@ def _linear_clime(graph, k):  # 参数k-表示要获取的子节点的个数
 
 # 测试算法
 if __name__ == '__main__':
-    dataset = []
-    f = open("Wiki-Vote.txt")
-    data = f.read()
-    rows = data.split('\n')
-    for row in rows:
-        split_row = row.split('\t')
-        name = (int(split_row[0]), int(split_row[1]))
-        dataset.append(name)
-    G = nx.DiGraph()
-    G.add_edges_from(dataset)  # 根据数据集创建有向图
-
-    n = input('Please input the number of seeds: k=')
-    k = int(n)
-    seed_nodes, layers_max = _linear_clime(G, k)  # 调用贪心算法获取节点子集和节点子集的最大激活节点集
-
-    print(seed_nodes)
-    print(layers_max)
+    # dataset = []
+    # f = open("Wiki-Vote.txt")
+    # data = f.read()
+    # rows = data.split('\n')
+    # for row in rows:
+    #     split_row = row.split('\t')
+    #     name = (int(split_row[0]), int(split_row[1]))
+    #     dataset.append(name)
+    # G = nx.DiGraph()
+    # G.add_edges_from(dataset)  # 根据数据集创建有向图
+    #
+    # n = input('Please input the number of seeds: k=')
+    # k = int(n)
+    # seed_nodes, layers_max = _linear_clime(G, k)  # 调用贪心算法获取节点子集和节点子集的最大激活节点集
+    #
+    # print(seed_nodes)
+    # print(layers_max)
+    pass
