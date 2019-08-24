@@ -2,7 +2,7 @@ import unittest
 
 import networkx
 
-from LT_directed import linear_threshold
+from LT_model import linear_threshold
 
 
 class MyTestCase(unittest.TestCase):
@@ -36,14 +36,13 @@ class MyTestCase(unittest.TestCase):
         print(linear_threshold(self.dg, [1], 1))
         print(linear_threshold(self.dg, [1], 2))
 
-    @staticmethod
-    def test_linear_threshold_graph_without_attribute():
-        graph = networkx.Graph()
-        graph.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
+    def test_linear_threshold_graph_without_attribute(self):
+        self.dg = networkx.Graph()
+        self.dg.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
 
-        print(linear_threshold(graph, [1]))
-        print(linear_threshold(graph, [1, 4]))
-        print(linear_threshold(graph, [1, 2]))
+        print(linear_threshold(self.dg, [1]))
+        print(linear_threshold(self.dg, [1, 4]))
+        print(linear_threshold(self.dg, [1, 2]))
 
 
 if __name__ == '__main__':
