@@ -107,6 +107,12 @@ def diffuse(directed_graph, seeds, steps=0):
 
 
 def diffuse_all(directed_graph, seeds):
+    """
+        To activate all nodes
+    :param directed_graph:
+    :param seeds:
+    :return:
+    """
     layer_i_nodes = [[i for i in seeds]]
     while len(seeds) < len(directed_graph):
         seeds, activated_nodes_of_this_round = diffuse_one_round(directed_graph, seeds)
@@ -115,6 +121,13 @@ def diffuse_all(directed_graph, seeds):
 
 
 def diffuse_k_rounds(directed_graph, seeds, steps):
+    """
+            To activate all seeds' successor {steps} times
+    :param directed_graph:
+    :param seeds:
+    :param steps:
+    :return:
+    """
     layer_i_nodes = [[i for i in seeds]]
     while steps > 0 and len(seeds) < len(directed_graph):
         origin_len = len(seeds)
@@ -174,4 +187,10 @@ def is_can_be_activated(directed_graph, node):
 if __name__ == '__main__':
     dg = nx.DiGraph()
     dg.add_weighted_edges_from([(1, 2, 0.5), (1, 3, 1.1), (4, 1, 2.3), (4, 2, 0.9)], weight='influence')
-    is_can_be_activated(dg, 4)
+    influence_factor_ = 0
+    for u_, v_, influence_ in dg.in_edges(3, data='influence'):
+        influence_factor_ += influence_
+    # The following values are the same
+    print(influence_factor_)
+    # noinspection PyCallingNonCallable
+    print(dg.in_degree(3, weight="influence"))
