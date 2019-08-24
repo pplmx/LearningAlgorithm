@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 import copy
 
 import networkx as nx
@@ -41,18 +40,18 @@ def linear_threshold(graph, seeds, steps=0):
     if type(graph) == nx.MultiGraph or type(graph) == nx.MultiDiGraph:
         raise Exception("linear_threshold() is not defined for graphs with multi-edges.")
 
-    # make sure the seeds are in the graph and unique
-    seeds = list(set(seeds))
-    for seed in seeds:
-        if seed not in graph.nodes():
-            raise Exception("seed", seed, "is not in graph")
-
     # change to directed graph
     if not graph.is_directed():
         # directed_graph = graph.to_directed()
         directed_graph = nx.DiGraph(graph)
     else:
         directed_graph = copy.deepcopy(graph)
+
+    # make sure the seeds are in the graph and unique
+    seeds = list(set(seeds))
+    for seed in seeds:
+        if seed not in directed_graph.nodes():
+            raise Exception("seed", seed, "is not in graph")
 
     # >>>>>>>>>> init thresholds <<<<<<<<<<
     """
