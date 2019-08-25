@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import networkx
 from numpy import random
 
 from LT_model import linear_threshold
@@ -13,11 +13,11 @@ def find_optimal(graph):
     degree_0_node_list = []
     # store the node who has a neighbor whose degree is 1
     degree_1_node_nbr_list = []
-    for idx, node, deg in enumerate(degree_list):
-        if deg == 0:
-            degree_0_node_list.append(node)
-        elif deg == 1:
-            degree_1_node_nbr_list.append(graph.neighbors(node)[0])
+    for idx, val in enumerate(degree_list):
+        if val[1] == 0:
+            degree_0_node_list.append(val[0])
+        elif val[1] == 1:
+            degree_1_node_nbr_list.append(graph.neighbors(val[0])[0])
         else:
             # remove the nodes whose degree is 0 or 1
             degree_list = degree_list[idx:]
@@ -28,7 +28,7 @@ def find_optimal(graph):
         layer_i_nodes = linear_threshold(graph, list(minimal_dominating_set))
         if len(layer_i_nodes) == 2:
             # return the optimal seeds
-            return layer_i_nodes[1]
+            return layer_i_nodes[0]
 
 
 def quick_sort4tuple_list(unsorted_list, idx=0, is_ordered_by_ascend=True):
@@ -60,8 +60,6 @@ def quick_sort4tuple_list(unsorted_list, idx=0, is_ordered_by_ascend=True):
 
 # 测试算法
 if __name__ == '__main__':
-    li = [(1, 3, 12), (5, 9, 1), (2, 1, 343), (4, 14, 0)]
-    print(quick_sort4tuple_list([(1, 3, 12), (5, 9, 1), (2, 1, 343), (4, 14, 0)], 2, False))
-    hi = {2, 4, 6}
-    hi |= {3}
-    print(hi)
+    g = networkx.Graph()
+    g.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
+    print(find_optimal(g))

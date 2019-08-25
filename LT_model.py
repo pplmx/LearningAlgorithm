@@ -155,7 +155,6 @@ def diffuse_one_round(graph, seeds):
     """
     activated_nodes_of_this_round = set()
     if graph.is_directed():
-        print("I'm the directed graph.")
         for seed in seeds:
             # get all successors of the seed (from seed to successor)
             successor_list = graph.successors(seed)
@@ -165,19 +164,33 @@ def diffuse_one_round(graph, seeds):
                 # if successor is not in seed, to check whether it can be activated (diffused)
                 if is_can_be_activated(graph, successor):
                     activated_nodes_of_this_round.add(successor)
+
+        # delete seeds from activated nodes in this round
+        for seed in seeds:
+            if seed in activated_nodes_of_this_round:
+                activated_nodes_of_this_round.remove(seed)
+
         # add the successors what are activated in this round to the seeds
         # next round, use the new seeds what are extended to diffuse
         seeds.extend(list(activated_nodes_of_this_round))
     else:
-        print("I'm the undirected graph.")
         seeds = set(seeds)
         for seed in seeds:
             # get all neighbors of the seed
-            nbr_list = graph.neighbors(seed)
+            # (The following two expressions are equivalent, but the latter is recommended.)
+            # nbr_list = graph.neighbors(seed)
+            nbr_list = graph[seed]
             activated_nodes_of_this_round = activated_nodes_of_this_round | set(nbr_list)
+
+        # delete seeds from activated nodes in this round
+        for seed in seeds:
+            if seed in activated_nodes_of_this_round:
+                activated_nodes_of_this_round.remove(seed)
+
         # add the neighbors what are activated in this round to the seeds
         # next round, use the new seeds what are extended to diffuse
         seeds = seeds | activated_nodes_of_this_round
+
     return list(seeds), list(activated_nodes_of_this_round)
 
 
