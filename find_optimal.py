@@ -58,7 +58,6 @@ def quick_sort4tuple_list(unsorted_list, idx=0, is_ordered_by_ascend=True):
     return quick_sort4tuple_list(greater, idx, False) + [mid_tuple] + quick_sort4tuple_list(less, idx, False)
 
 
-# 测试算法
 if __name__ == '__main__':
     g = networkx.Graph()
     g.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
