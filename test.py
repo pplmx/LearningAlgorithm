@@ -40,6 +40,10 @@ class MyTestCase(unittest.TestCase):
         self.dg = networkx.Graph()
         self.dg.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
 
+        # [(1, 2), (2, 2), (3, 4), (4, 3), (5, 3), (6, 2)]
+        print(self.dg.degree)
+        print(list(self.dg.degree)[2][1])
+
         print(linear_threshold(self.dg, [1]))
         print(linear_threshold(self.dg, [1, 4]))
         print(linear_threshold(self.dg, [1, 2]))

@@ -1,8 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import copy
 
-# 贪心算法
+from numpy import random
+
 from LT_model import linear_threshold
+
+
+def find_optimal(graph):
+    minimal_dominating_set = set()
+    degree_list = list(graph.degree)
+    # store the node whose degree is zero
+    degree_0_node_list = [node for node, deg in degree_list if deg == 0]
+    # store the node who has a neighbor whose degree is 1
+    degree_1_node_nbr_list = [graph.neighbors(node)[0] for node, deg in degree_list if deg == 1]
 
 
 def _linear_clime(graph, k):  # 参数k-表示要获取的子节点的个数
@@ -39,6 +50,29 @@ def _linear_clime(graph, k):  # 参数k-表示要获取的子节点的个数
     return seed_node_list, layers_max  # 返回值是贪心算法求得的子节点集和该子节点集激活的最大节点集
 
 
+def quick_sort4tuple_list(unsorted_list, idx=0):
+    """
+        unsorted_list e.g.:
+                [(1, 3), (5, 9), (2, 1), (4, 14)]
+                [(1, 3, 12), (5, 9, 1), (2, 1, 343), (4, 14, 0)]
+    :param unsorted_list:
+    :param idx:
+    :return:
+    """
+    data_len = len(unsorted_list)
+    if data_len <= 1:
+        return unsorted_list
+    rand_val = random.randint(data_len)
+    mid_tuple = unsorted_list[rand_val]
+    del unsorted_list[rand_val]
+    print(mid_tuple)
+    less = [i for i in unsorted_list if i[idx] <= mid_tuple[idx]]
+    print("less: ", less)
+    greater = [i for i in unsorted_list if i[idx] > mid_tuple[idx]]
+    print("greater: ", greater)
+    return quick_sort4tuple_list(less) + [mid_tuple] + quick_sort4tuple_list(greater)
+
+
 # 测试算法
 if __name__ == '__main__':
     # dataset = []
@@ -58,4 +92,6 @@ if __name__ == '__main__':
     #
     # print(seed_nodes)
     # print(layers_max)
+    li = [(1, 3, 12), (5, 9, 1), (2, 1, 343), (4, 14, 0)]
+    print(quick_sort4tuple_list(li, 1))
     pass
