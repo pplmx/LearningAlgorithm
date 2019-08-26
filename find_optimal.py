@@ -17,7 +17,7 @@ def find_optimal(graph):
         if val[1] == 0:
             degree_0_node_list.append(val[0])
         elif val[1] == 1:
-            degree_1_node_nbr_list.append(graph.neighbors(val[0])[0])
+            degree_1_node_nbr_list.append(list(graph[val[0]])[0])
         else:
             # remove the nodes whose degree is 0 or 1
             degree_list = degree_list[idx:]

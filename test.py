@@ -44,8 +44,15 @@ class MyTestCase(unittest.TestCase):
         # print(self.g.degree)
 
         # print(linear_threshold(self.g, [1]))
-        # print(linear_threshold(self.g, [1, 4]))
+        print(linear_threshold(self.g, [1, 4]))
+        print(linear_threshold(self.g, [1, 5]))
+        print(linear_threshold(self.g, [1, 6]))
+        print(linear_threshold(self.g, [2, 4]))
+        print(linear_threshold(self.g, [2, 5]))
+        print(linear_threshold(self.g, [2, 6]))
+        print(linear_threshold(self.g, [3, 4]))
         print(linear_threshold(self.g, [3, 5]))
+        print(linear_threshold(self.g, [3, 6]))
         # print(linear_threshold(self.g, [1, 2]))
 
     def test_linear_threshold_undirected_graph_minimal_dominating_set(self):
