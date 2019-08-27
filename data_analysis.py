@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from datetime import datetime
 
 import igraph
 import networkx as nx
@@ -12,7 +13,7 @@ def read_data(file):
     with open(file) as fr:
         for line in fr.readlines():
             tmp = line.split()
-            dataset.append((tmp[0], tmp[1]))
+            dataset.append((int(tmp[0]), int(tmp[1])))
     return dataset
 
 
@@ -97,7 +98,7 @@ def draw_3d(edges_list):
 
 if __name__ == '__main__':
     # start = datetime.now()
-    # edges_data = read_data('OF_one-mode_weightedmsg_Newman.txt')
+    edges_data = read_data('OF_one-mode_weightedmsg_Newman.txt')
     # end = datetime.now()
     # print("Read Data cost: {}s".format(end - start))
     # undirected_graph = nx.Graph()
@@ -106,7 +107,7 @@ if __name__ == '__main__':
     # nx.draw(undirected_graph, with_labels=True, font_weight='bold', node_color='y', )
     # plt.show()
 
-    draw_3d([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
+    draw_3d(edges_data)
 
     # start = datetime.now()
     # print(find_optimal(undirected_graph))
