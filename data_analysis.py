@@ -73,7 +73,7 @@ def draw_3d(edges_list):
                 )
 
     layout = go.Layout(
-        title="Network of coappearances of characters in Victor Hugo's novel<br> Les Miserables (3D visualization)",
+        title="3D visualization",
         width=1000,
         height=1000,
         showlegend=False,
