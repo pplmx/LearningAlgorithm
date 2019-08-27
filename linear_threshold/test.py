@@ -2,8 +2,8 @@ import unittest
 
 import networkx
 
-from LT_model import linear_threshold
-from find_optimal import find_optimal
+from linear_threshold.LT_model import linear_threshold
+from linear_threshold.find_optimal import find_optimal
 
 
 class MyTestCase(unittest.TestCase):
