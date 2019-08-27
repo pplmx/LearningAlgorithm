@@ -24,7 +24,7 @@ def draw_3d(edges_list):
     udg.add_edges_from(edges_list)
     # Get the node positions, set by the Kamada-Kawai layout for 3D graphs
     # layout is a list of three elements lists (the coordinates of nodes):
-    layout = ig.layout('kk', dim=3)
+    layout = ig.layout('kk_3d')
     nodes_num = ig.vcount()
     edges_num = ig.ecount()
 
