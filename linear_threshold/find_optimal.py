@@ -71,19 +71,72 @@ def quick_sort_by_recursion(arr):
 
 def quicksort(arr, left, right):
     if left < right:
-        mid = partition(arr, left, right)
-        quicksort(arr, left, mid - 1)
-        quicksort(arr, mid + 1, right)
+        # pi is partitioning index, arr[p] is now
+        # at right place
+        pi = partition(arr, left, right)
+
+        # Separately sort elements before
+        # partition and after partition
+        quicksort(arr, left, pi - 1)
+        quicksort(arr, pi + 1, right)
 
 
-def partition(arr, left, right):
-    x = arr[right]
-    i = left - 1  # 初始i指向一个空，保证0到i都小于等于 x
-    for j in range(left, right):  # j用来寻找比x小的，找到就和i+1交换，保证i之前的都小于等于x
-        if arr[j] <= x:
-            i = i + 1
+def quick_sort_iterative(arr, l, h):
+    # Create an auxiliary stack
+    size = h - l + 1
+    stack = [0] * size
+
+    # initialize top of stack
+    top = -1
+
+    # push initial values of l and h to stack
+    top += 1
+    stack[0] = l
+    top += 1
+    stack[1] = h
+
+    # Keep popping from stack while is not empty
+    while top >= 0:
+
+        # Pop h and l
+        h = stack[top]
+        top = top - 1
+        l = stack[top]
+        top = top - 1
+
+        # Set pivot element at its correct position in
+        # sorted array
+        p = partition(arr, l, h)
+
+        # If there are elements on left side of pivot,
+        # then push left side to stack
+        if p - 1 > l:
+            top = top + 1
+            stack[top] = l
+            top = top + 1
+            stack[top] = p - 1
+
+        # If there are elements on right side of pivot,
+        # then push right side to stack
+        if p + 1 < h:
+            top = top + 1
+            stack[top] = p + 1
+            top = top + 1
+            stack[top] = h
+
+
+def partition(arr, start_idx, end_idx):
+    pivot = arr[end_idx]
+
+    # index of smaller element
+    i = start_idx - 1
+    for j in range(start_idx, end_idx):
+        # If current element is smaller than the pivot
+        if arr[j] <= pivot:
+            # increment index of smaller element
+            i += 1
             arr[i], arr[j] = arr[j], arr[i]
-    arr[i + 1], arr[right] = arr[right], arr[i + 1]  # 0到i 都小于等于x ,所以x的最终位置就是i+1
+    arr[i + 1], arr[end_idx] = arr[end_idx], arr[i + 1]
     return i + 1
 
 
@@ -95,8 +148,8 @@ def random_quicksort(arr, left, right):
 
 
 def random_partition(arr, left, right):
-    mid = random.randint(left, right + 1)  # 生成[left,right]之间的一个随机数
-    arr[mid], arr[right] = arr[right], arr[mid]
+    pivot = random.randint(left, right + 1)  # 生成[left,right]之间的一个随机数
+    arr[pivot], arr[right] = arr[right], arr[pivot]
     x = arr[right]
     i = left - 1  # 初始i指向一个空，保证0到i都小于等于 x
     for j in range(left, right):  # j用来寻找比x小的，找到就和i+1交换，保证i之前的都小于等于x
@@ -111,4 +164,7 @@ if __name__ == '__main__':
     # g = networkx.Graph()
     # g.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
     # print(find_optimal(g))
-    print(quick_sort_by_recursion([2, 35, 1, 6, 23, 6762, 2435, 90]))
+
+    arr_t = [2, 35, 1, 6, 23, 6762, 2435, 90]
+    quick_sort_iterative(arr_t, 0, 7)
+    print(arr_t)
