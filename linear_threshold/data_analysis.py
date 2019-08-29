@@ -100,7 +100,7 @@ def draw_3d(edges_list):
 
 if __name__ == '__main__':
     start = datetime.now()
-    edges_data = read_data('../data/com-amazon.ungraph.txt')
+    edges_data = read_data('../data/OF_one-mode_weightedmsg_Newman.txt')
     end = datetime.now()
     print("Read Data cost: {}s".format(end - start))
     undirected_graph = nx.Graph()
@@ -111,6 +111,8 @@ if __name__ == '__main__':
     # draw_3d(edges_data)
 
     start = datetime.now()
-    print(find_optimal(undirected_graph))
+    mds = find_optimal(undirected_graph)
     end = datetime.now()
+    print(mds)
+    print(len(mds))
     print("Find optimal cost: {}s".format(end - start))
