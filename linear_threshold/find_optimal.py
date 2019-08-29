@@ -69,21 +69,19 @@ def quick_sort_by_recursion(arr):
     return quick_sort_by_recursion(less) + [mid_val] + quick_sort_by_recursion(greater)
 
 
-def quicksort(arr, left, right):
+def quick_sort(arr, left, right):
     if left < right:
-        # pi is partitioning index, arr[p] is now
-        # at right place
-        pi = partition(arr, left, right)
+        pivot_idx = partition(arr, left, right)
 
         # Separately sort elements before
         # partition and after partition
-        quicksort(arr, left, pi - 1)
-        quicksort(arr, pi + 1, right)
+        quick_sort(arr, left, pivot_idx - 1)
+        quick_sort(arr, pivot_idx + 1, right)
 
 
-def quick_sort_iterative(arr, l, h):
+def quick_sort_iterative(arr, low, high):
     # Create an auxiliary stack
-    size = h - l + 1
+    size = high - low + 1
     stack = [0] * size
 
     # initialize top of stack
@@ -91,38 +89,45 @@ def quick_sort_iterative(arr, l, h):
 
     # push initial values of l and h to stack
     top += 1
-    stack[0] = l
+    stack[top] = low
     top += 1
-    stack[1] = h
+    stack[top] = high
 
     # Keep popping from stack while is not empty
     while top >= 0:
 
         # Pop h and l
-        h = stack[top]
+        high = stack[top]
         top = top - 1
-        l = stack[top]
+        low = stack[top]
         top = top - 1
 
         # Set pivot element at its correct position in
         # sorted array
-        p = partition(arr, l, h)
+        pivot_idx = partition(arr, low, high)
 
         # If there are elements on left side of pivot,
         # then push left side to stack
-        if p - 1 > l:
+        if pivot_idx - 1 > low:
             top = top + 1
-            stack[top] = l
+            stack[top] = low
             top = top + 1
-            stack[top] = p - 1
+            stack[top] = pivot_idx - 1
 
         # If there are elements on right side of pivot,
         # then push right side to stack
-        if p + 1 < h:
+        if pivot_idx + 1 < high:
             top = top + 1
-            stack[top] = p + 1
+            stack[top] = pivot_idx + 1
             top = top + 1
-            stack[top] = h
+            stack[top] = high
+
+
+def random_quick_sort(arr, left, right):
+    if left < right:
+        pivot_idx = random_partition(arr, left, right)
+        random_quick_sort(arr, left, pivot_idx - 1)
+        random_quick_sort(arr, pivot_idx + 1, right)
 
 
 def partition(arr, start_idx, end_idx):
@@ -138,13 +143,6 @@ def partition(arr, start_idx, end_idx):
             arr[i], arr[j] = arr[j], arr[i]
     arr[i + 1], arr[end_idx] = arr[end_idx], arr[i + 1]
     return i + 1
-
-
-def random_quicksort(arr, left, right):
-    if left < right:
-        mid = random_partition(arr, left, right)
-        random_quicksort(arr, left, mid - 1)
-        random_quicksort(arr, mid + 1, right)
 
 
 def random_partition(arr, left, right):
