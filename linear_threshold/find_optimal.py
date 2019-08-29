@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import networkx
 from numpy import random
 
 from linear_threshold.LT_model import linear_threshold
@@ -7,7 +8,8 @@ from linear_threshold.LT_model import linear_threshold
 
 def find_optimal(graph):
     minimal_dominating_set = set()
-    degree_list = quick_sort4tuple_list(list(graph.degree), 1)
+    degree_list = list(graph.degree)
+    quick_sort_iterative(degree_list, 0, len(degree_list) - 1, 1)
     # store the node whose degree is zero
     degree_0_node_list = []
     # store the node who has a neighbor whose degree is 1
@@ -79,7 +81,7 @@ def quick_sort(arr, left, right):
         quick_sort(arr, pivot_idx + 1, right)
 
 
-def quick_sort_iterative(arr, low, high):
+def quick_sort_iterative(arr, low, high, idx=None):
     # Create an auxiliary stack
     size = high - low + 1
     stack = [0] * size
@@ -104,7 +106,8 @@ def quick_sort_iterative(arr, low, high):
 
         # Set pivot element at its correct position in
         # sorted array
-        pivot_idx = partition(arr, low, high)
+        # pivot_idx = partition(arr, low, high)
+        pivot_idx = random_partition4tuple_list(arr, low, high, idx)
 
         # If there are elements on left side of pivot,
         # then push left side to stack
@@ -145,9 +148,22 @@ def partition(arr, start_idx, end_idx):
     return i + 1
 
 
+def random_partition4tuple_list(tuple_list, left, right, idx=0):
+    pivot_idx = random.randint(left, right + 1)
+    tuple_list[pivot_idx], tuple_list[right] = tuple_list[right], tuple_list[pivot_idx]
+    x = tuple_list[right][idx]
+    i = left - 1
+    for j in range(left, right):
+        if tuple_list[j][idx] <= x:
+            i += 1
+            tuple_list[i], tuple_list[j] = tuple_list[j], tuple_list[i]
+    tuple_list[i + 1], tuple_list[right] = tuple_list[right], tuple_list[i + 1]
+    return i + 1
+
+
 def random_partition(arr, left, right):
-    pivot = random.randint(left, right + 1)  # 生成[left,right]之间的一个随机数
-    arr[pivot], arr[right] = arr[right], arr[pivot]
+    pivot_idx = random.randint(left, right + 1)  # 生成[left,right]之间的一个随机数
+    arr[pivot_idx], arr[right] = arr[right], arr[pivot_idx]
     x = arr[right]
     i = left - 1  # 初始i指向一个空，保证0到i都小于等于 x
     for j in range(left, right):  # j用来寻找比x小的，找到就和i+1交换，保证i之前的都小于等于x
@@ -159,10 +175,11 @@ def random_partition(arr, left, right):
 
 
 if __name__ == '__main__':
-    # g = networkx.Graph()
-    # g.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
-    # print(find_optimal(g))
+    g = networkx.Graph()
+    g.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
+    print(find_optimal(g))
 
-    arr_t = [2, 35, 1, 6, 23, 6762, 2435, 90]
-    quick_sort_iterative(arr_t, 0, 7)
-    print(arr_t)
+    # arr_t = [2, 35, 1, 6, 23, 6762, 2435, 90]
+    # tuple_l = [(1, 2, 0.5), (1, 3, 1.1), (4, 1, 2.3), (4, 2, 0.9)]
+    # quick_sort_iterative(tuple_l, 0, len(tuple_l) - 1, 2)
+    # print(tuple_l)

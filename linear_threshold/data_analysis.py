@@ -7,6 +7,8 @@ import networkx as nx
 import plotly.graph_objs as go
 from plotly.offline import iplot
 
+from linear_threshold.find_optimal import find_optimal
+
 
 def read_data(file):
     dataset = []
@@ -97,19 +99,18 @@ def draw_3d(edges_list):
 
 
 if __name__ == '__main__':
-    # start = datetime.now()
-    edges_data = read_data('OF_one-mode_weightedmsg_Newman.txt')
-    # end = datetime.now()
-    # print("Read Data cost: {}s".format(end - start))
-    # undirected_graph = nx.Graph()
-    # undirected_graph.add_edges_from(edges_data)
-    #
+    start = datetime.now()
+    edges_data = read_data('../data/com-amazon.ungraph.txt')
+    end = datetime.now()
+    print("Read Data cost: {}s".format(end - start))
+    undirected_graph = nx.Graph()
+    undirected_graph.add_edges_from(edges_data)
     # nx.draw(undirected_graph, with_labels=True, font_weight='bold', node_color='y', )
     # plt.show()
 
-    draw_3d(edges_data)
+    # draw_3d(edges_data)
 
-    # start = datetime.now()
-    # print(find_optimal(undirected_graph))
-    # end = datetime.now()
-    # print("Find optimal cost: {}s".format(end - start))
+    start = datetime.now()
+    print(find_optimal(undirected_graph))
+    end = datetime.now()
+    print("Find optimal cost: {}s".format(end - start))
