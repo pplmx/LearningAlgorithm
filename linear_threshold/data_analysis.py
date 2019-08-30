@@ -115,4 +115,4 @@ if __name__ == '__main__':
     end = datetime.now()
     print(mds)
     print(len(mds))
-    print("Find optimal cost: {}s".format(end - start))
+    print("Find Optimal cost: {}s".format(end - start))

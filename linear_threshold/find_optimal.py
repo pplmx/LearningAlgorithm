@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 import networkx
 from numpy import random
 
@@ -9,7 +11,11 @@ from linear_threshold.LT_model import linear_threshold
 def find_optimal(graph):
     minimal_dominating_set = set()
     degree_list = list(graph.degree)
-    quick_sort_iterative(degree_list, 0, len(degree_list) - 1, 1)
+    start = datetime.now()
+    # quick_sort_iterative(degree_list, 0, len(degree_list) - 1, 1)
+    degree_list = sorted(degree_list, key=lambda x: x[1])
+    end = datetime.now()
+    print("Sort cost: {}s".format(end - start))
     # store the node whose degree is zero
     degree_0_node_list = []
     # store the node who has a neighbor whose degree is 1
