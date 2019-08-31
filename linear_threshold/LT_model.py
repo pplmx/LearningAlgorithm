@@ -10,7 +10,7 @@ import networkx as nx
 #  Diffusion Models
 # -----------------------------------
 
-def linear_threshold(graph, seeds, steps=0):
+def linear_threshold(graph, seeds: set, steps=0):
     """
     Parameters
     ----------
@@ -44,7 +44,6 @@ def linear_threshold(graph, seeds, steps=0):
         directed_graph = copy.deepcopy(graph)
 
         # make sure the seeds are in the graph and unique
-        seeds = list(set(seeds))
         for seed in seeds:
             if seed not in directed_graph.nodes():
                 raise Exception("seed ", seed, " is not in directed graph")
@@ -92,7 +91,6 @@ def linear_threshold(graph, seeds, steps=0):
         undirected_graph = copy.deepcopy(graph)
 
         # make sure the seeds are in the graph and unique
-        seeds = list(set(seeds))
         for seed in seeds:
             if seed not in undirected_graph.nodes():
                 raise Exception("seed ", seed, " is not in undirected graph")
@@ -102,7 +100,7 @@ def linear_threshold(graph, seeds, steps=0):
         return diffuse(undirected_graph, seeds_duplicate, steps)
 
 
-def diffuse(graph, seeds, steps=0):
+def diffuse(graph, seeds: set, steps=0):
     if steps <= 0:
         # perform diffusion until no more nodes can be activated
         return diffuse_all(graph, seeds)
@@ -110,7 +108,7 @@ def diffuse(graph, seeds, steps=0):
     return diffuse_k_rounds(graph, seeds, steps)
 
 
-def diffuse_all(graph, seeds):
+def diffuse_all(graph, seeds: set):
     """
         To activate all nodes
     :param graph:
@@ -124,7 +122,7 @@ def diffuse_all(graph, seeds):
     return layer_i_nodes
 
 
-def diffuse_k_rounds(graph, seeds, steps):
+def diffuse_k_rounds(graph, seeds: set, steps):
     """
             To activate all seeds' successors[directed_graph] or neighbors[undirected_graph] {steps} times
     :param graph:
@@ -144,52 +142,53 @@ def diffuse_k_rounds(graph, seeds, steps):
     return layer_i_nodes
 
 
-def diffuse_one_round(graph, seeds):
+def diffuse_one_round(graph, origin_seeds: set):
     """
         To activate all seeds' successors[directed_graph] or neighbors[undirected_graph] once
     :param graph:
-    :param seeds:
+    :param origin_seeds:
     :return:
     """
+    next_seeds = set(origin_seeds)
     activated_nodes_of_this_round = set()
     if graph.is_directed():
-        for seed in seeds:
+        for seed in origin_seeds:
             # get all successors of the seed (from seed to successor)
             successor_list = graph.successors(seed)
             for successor in successor_list:
-                if successor in seeds:
+                if successor in origin_seeds:
                     continue
                 # if successor is not in seed, to check whether it can be activated (diffused)
                 if is_can_be_activated(graph, successor):
                     activated_nodes_of_this_round.add(successor)
 
         # delete seeds from activated nodes in this round
-        for seed in seeds:
+        for seed in origin_seeds:
             if seed in activated_nodes_of_this_round:
                 activated_nodes_of_this_round.remove(seed)
 
         # add the successors what are activated in this round to the seeds
         # next round, use the new seeds what are extended to diffuse
-        seeds.extend(list(activated_nodes_of_this_round))
+        next_seeds |= activated_nodes_of_this_round
     else:
-        seeds = set(seeds)
-        for seed in seeds:
+        for seed in origin_seeds:
             # get all neighbors of the seed
             # (The following two expressions are equivalent, but the latter is recommended.)
             # nbr_list = graph.neighbors(seed)
             nbr_list = graph[seed]
             activated_nodes_of_this_round |= set(nbr_list)
 
+        # ===== To increase the rate of diffuse, comment the following code =====
         # delete seeds from activated nodes in this round
-        for seed in seeds:
-            if seed in activated_nodes_of_this_round:
-                activated_nodes_of_this_round.remove(seed)
+        # for seed in seeds:
+        #     if seed in activated_nodes_of_this_round:
+        #         activated_nodes_of_this_round.remove(seed)
 
         # add the neighbors what are activated in this round to the seeds
         # next round, use the new seeds what are extended to diffuse
-        seeds |= activated_nodes_of_this_round
+        next_seeds |= activated_nodes_of_this_round
 
-    return list(seeds), list(activated_nodes_of_this_round)
+    return next_seeds, list(activated_nodes_of_this_round)
 
 
 def is_can_be_activated(directed_graph, node):

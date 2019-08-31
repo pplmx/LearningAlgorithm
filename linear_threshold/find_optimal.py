@@ -37,9 +37,9 @@ def find_optimal(graph):
             # except the 1st times, if node in minimal dominating set, go to the next loop
             if node in minimal_dominating_set:
                 continue
-        minimal_dominating_set |= {node}
-        print(minimal_dominating_set)
-        next_seeds, this_activated = LT_model.diffuse_one_round(graph, list(minimal_dominating_set))
+        minimal_dominating_set.add(node)
+        # print(minimal_dominating_set)
+        next_seeds, this_activated = LT_model.diffuse_one_round(graph, minimal_dominating_set)
         if len(next_seeds) == len(graph):
             # return the optimal seeds
             return list(minimal_dominating_set)
