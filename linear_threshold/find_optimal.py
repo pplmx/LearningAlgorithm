@@ -5,7 +5,6 @@ from datetime import datetime
 import networkx
 from numpy import random
 
-from linear_threshold import LT_model
 from linear_threshold.LT_model import LinearThresholdModel
 
 
@@ -33,7 +32,7 @@ def find_optimal(graph):
     minimal_dominating_set |= set(degree_0_node_list + degree_1_node_nbr_list)
 
     # To init the graph
-    lt_model = LinearThresholdModel(graph)
+    lt_model = LinearThresholdModel(graph, steps=1)
     graph = lt_model.get_graph()
 
     flag = 0
@@ -45,9 +44,10 @@ def find_optimal(graph):
                 continue
         minimal_dominating_set.add(node)
         # print(minimal_dominating_set)
-        next_seeds, this_activated = LT_model.diffuse_one_round(graph, minimal_dominating_set)
-        # layer_i_nodes = LT_model.linear_threshold(graph, minimal_dominating_set, steps=1)
-        if len(next_seeds) == len(graph):
+        # next_seeds, this_activated = LT_model.diffuse_one_round(graph, minimal_dominating_set)
+        lt_model.set_seeds(minimal_dominating_set)
+        layer_i_nodes = lt_model.diffuse()
+        if len(set(layer_i_nodes[0] + layer_i_nodes[1])) == len(graph):
             # return the optimal seeds
             return list(minimal_dominating_set)
 
