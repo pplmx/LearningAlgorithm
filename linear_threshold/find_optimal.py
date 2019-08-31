@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
+import networkx
 from numpy import random
 
 from linear_threshold.LT_model import linear_threshold
@@ -29,8 +30,14 @@ def find_optimal(graph):
             degree_list = degree_list[idx:]
             break
     minimal_dominating_set |= set(degree_0_node_list + degree_1_node_nbr_list)
+    flag = 0
     for node, deg in degree_list[::-1]:
+        flag += 1
+        if flag > 1:
+            if node in minimal_dominating_set:
+                continue
         minimal_dominating_set |= {node}
+        print(minimal_dominating_set)
         layer_i_nodes = linear_threshold(graph, list(minimal_dominating_set))
         if len(layer_i_nodes) == 2:
             # return the optimal seeds
@@ -180,19 +187,19 @@ def random_partition(arr, left, right):
 
 
 if __name__ == '__main__':
-    # g = networkx.Graph()
-    # g.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
-    # print(find_optimal(g))
+    g = networkx.Graph()
+    g.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
+    print(find_optimal(g))
 
     # To check if the rate of custom quick sort is normal
-    tuple_l = [(i, i + 1) for i in range(2_000_000)]
-    for i in range(10):
-        random.shuffle(tuple_l)
-        start_time = datetime.now()
-        quick_sort_iterative(tuple_l, 0, len(tuple_l) - 1, 1)
-        end_time = datetime.now()
-        print("Defined Quick Sort cost: {}s".format(end_time - start_time))
-        if tuple_l == sorted(tuple_l, key=lambda x: x[1]):
-            print("Quick sort is successful.")
-        else:
-            print("Quick sort is error.")
+    # tuple_l = [(i, i + 1) for i in range(2_000_000)]
+    # for i in range(10):
+    #     random.shuffle(tuple_l)
+    #     start_time = datetime.now()
+    #     quick_sort_iterative(tuple_l, 0, len(tuple_l) - 1, 1)
+    #     end_time = datetime.now()
+    #     print("Defined Quick Sort cost: {}s".format(end_time - start_time))
+    #     if tuple_l == sorted(tuple_l, key=lambda x: x[1]):
+    #         print("Quick sort is successful.")
+    #     else:
+    #         print("Quick sort is error.")
