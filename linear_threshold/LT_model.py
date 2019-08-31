@@ -180,7 +180,7 @@ def diffuse_one_round(graph, seeds):
             # (The following two expressions are equivalent, but the latter is recommended.)
             # nbr_list = graph.neighbors(seed)
             nbr_list = graph[seed]
-            activated_nodes_of_this_round = activated_nodes_of_this_round | set(nbr_list)
+            activated_nodes_of_this_round |= set(nbr_list)
 
         # delete seeds from activated nodes in this round
         for seed in seeds:
