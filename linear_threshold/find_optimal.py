@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
-import networkx
 from numpy import random
 
 from linear_threshold.LT_model import linear_threshold
@@ -181,11 +180,19 @@ def random_partition(arr, left, right):
 
 
 if __name__ == '__main__':
-    g = networkx.Graph()
-    g.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
-    print(find_optimal(g))
+    # g = networkx.Graph()
+    # g.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
+    # print(find_optimal(g))
 
-    # arr_t = [2, 35, 1, 6, 23, 6762, 2435, 90]
-    # tuple_l = [(1, 2, 0.5), (1, 3, 1.1), (4, 1, 2.3), (4, 2, 0.9)]
-    # quick_sort_iterative(tuple_l, 0, len(tuple_l) - 1, 2)
-    # print(tuple_l)
+    # To check whether the rate of defined quick sort is okay
+    tuple_l = [(i, i + 1) for i in range(2_000_000)]
+    for i in range(10):
+        random.shuffle(tuple_l)
+        start_time = datetime.now()
+        quick_sort_iterative(tuple_l, 0, len(tuple_l) - 1, 1)
+        end_time = datetime.now()
+        print("Defined Quick Sort cost: {}s".format(end_time - start_time))
+        if tuple_l == sorted(tuple_l, key=lambda x: x[1]):
+            print("Quick sort is successful.")
+        else:
+            print("Quick sort is error.")

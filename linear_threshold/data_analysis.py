@@ -100,7 +100,7 @@ def draw_3d(edges_list):
 
 if __name__ == '__main__':
     start = datetime.now()
-    edges_data = read_data('../data/facebook_combined.txt')
+    edges_data = read_data('../data/com-amazon.undirected.txt')
     end = datetime.now()
     print("Read Data cost: {}s".format(end - start))
     undirected_graph = nx.Graph()
