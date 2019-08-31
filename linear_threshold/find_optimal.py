@@ -184,7 +184,7 @@ if __name__ == '__main__':
     # g.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
     # print(find_optimal(g))
 
-    # To check whether the rate of defined quick sort is okay
+    # To check if the rate of custom quick sort is normal
     tuple_l = [(i, i + 1) for i in range(2_000_000)]
     for i in range(10):
         random.shuffle(tuple_l)
