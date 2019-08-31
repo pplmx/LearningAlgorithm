@@ -5,8 +5,6 @@ import copy
 
 import networkx as nx
 
-__all__ = ['linear_threshold']
-
 
 # -----------------------------------
 #  Diffusion Models
@@ -119,17 +117,8 @@ def diffuse_all(graph, seeds):
     :param seeds:
     :return:
     """
-    # flag is to reduce the time of finding optimal
-    # if you wanna diffuse to all nodes, you can remove the flag and its associated code
-    flag = 0
     layer_i_nodes = [[i for i in seeds]]
     while len(seeds) < len(graph):
-        flag += 1
-        if flag == 2:
-            # The 2nd round of propagation has begun,
-            # so the current seeds is unlikely to be optimal, discard it
-            layer_i_nodes.append([0])
-            break
         seeds, activated_nodes_of_this_round = diffuse_one_round(graph, seeds)
         layer_i_nodes.append(activated_nodes_of_this_round)
     return layer_i_nodes
@@ -198,7 +187,7 @@ def diffuse_one_round(graph, seeds):
 
         # add the neighbors what are activated in this round to the seeds
         # next round, use the new seeds what are extended to diffuse
-        seeds = seeds | activated_nodes_of_this_round
+        seeds |= activated_nodes_of_this_round
 
     return list(seeds), list(activated_nodes_of_this_round)
 
