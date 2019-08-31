@@ -10,6 +10,13 @@ import networkx as nx
 #  Diffusion Models
 # -----------------------------------
 
+class LinearThresholdModel:
+    def __init__(self, graph, seeds, steps=0):
+        self.graph = graph
+        self.seeds = seeds
+        self.steps = steps
+
+
 def linear_threshold(graph, seeds: set, steps=0):
     """
     Parameters
@@ -122,7 +129,7 @@ def diffuse_all(graph, seeds: set):
     return layer_i_nodes
 
 
-def diffuse_k_rounds(graph, seeds: set, steps):
+def diffuse_k_rounds(graph, seeds: set, steps=1):
     """
             To activate all seeds' successors[directed_graph] or neighbors[undirected_graph] {steps} times
     :param graph:

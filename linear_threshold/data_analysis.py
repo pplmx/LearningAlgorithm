@@ -113,6 +113,6 @@ if __name__ == '__main__':
     start = datetime.now()
     mds = find_optimal(undirected_graph)
     end = datetime.now()
-    print(mds)
-    print(len(mds))
     print("Find Optimal cost: {}s".format(end - start))
+    print("The minimal dominating set: {}".format(mds))
+    print("Its length: {}".format(len(mds)))

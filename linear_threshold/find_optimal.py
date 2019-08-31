@@ -40,6 +40,7 @@ def find_optimal(graph):
         minimal_dominating_set.add(node)
         # print(minimal_dominating_set)
         next_seeds, this_activated = LT_model.diffuse_one_round(graph, minimal_dominating_set)
+        # layer_i_nodes = LT_model.linear_threshold(graph, minimal_dominating_set, steps=1)
         if len(next_seeds) == len(graph):
             # return the optimal seeds
             return list(minimal_dominating_set)
