@@ -1,2 +1,3 @@
 # LearningAlgorithm
-Learning Algorithm
+Learning Algorithm  
+`What a wonderful!`
