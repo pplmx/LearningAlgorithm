@@ -11,10 +11,78 @@ import networkx as nx
 # -----------------------------------
 
 class LinearThresholdModel:
-    def __init__(self, graph, seeds, steps=0):
-        self.graph = graph
-        self.seeds = seeds
-        self.steps = steps
+    def __init__(self, graph, seeds: set = None):
+        self.__graph = graph
+        self.__seeds = seeds
+        self.__init_model()
+
+    def __init_model(self):
+        if type(self.__graph) == nx.MultiGraph or type(self.__graph) == nx.MultiDiGraph:
+            raise Exception("LinearThresholdModel is not defined for graphs with multi-edges.")
+
+        # is directed or not
+        if self.__graph.is_directed():
+            directed_graph = copy.deepcopy(self.__graph)
+
+            # >>>>>>>>>> init thresholds <<<<<<<<<<
+            init_threshold4directed_graph(directed_graph)
+            # >>>>>>>>>> init influences <<<<<<<<<<
+            init_influence4directed_graph(directed_graph)
+
+            self.__graph = copy.deepcopy(directed_graph)
+
+    def is_seeds_in_graph(self):
+        # make sure the seeds are in the graph and unique
+        node_set = set(self.__graph)
+        if not self.__seeds.issubset(node_set):
+            for seed in self.__seeds:
+                if seed not in node_set:
+                    raise Exception("seed ", seed, " is not in graph")
+
+    def set_seeds(self, seeds):
+        self.__seeds = seeds
+
+    def get_graph(self):
+        return self.__graph
+
+
+def init_threshold4directed_graph(directed_graph):
+    """
+    >> list(graph.nodes)
+    [0, 1, 2]
+    >> list(graph)
+    [0, 1, 2]
+    """
+    for i, threshold in directed_graph.nodes(data='threshold'):
+        if threshold is None:
+            directed_graph.nodes[i]['threshold'] = 0.5
+        elif threshold > 1:
+            raise Exception("Node error: The threshold of node-{} cannot be larger than 1.".format(i))
+
+
+def init_influence4directed_graph(directed_graph):
+    # >>>>>>>>>> init influences <<<<<<<<<<
+    """
+    >> [e for e in graph.edges]
+    [(0, 1), (1, 2), (2, 3)]
+    """
+    for u, v, influence in directed_graph.edges(data='influence'):
+        if influence is None:
+            # ========== influence = out_degree / out_degree_sum ==========
+            # # noinspection PyCallingNonCallable
+            # out_degree = directed_graph.out_degree(u)
+            # # the sum of the out-degree of all in-edge nodes of v
+            # out_degree_sum = 0
+            # for src, dst in directed_graph.in_edges(v):
+            #     # noinspection PyCallingNonCallable
+            #     out_degree_sum += directed_graph.out_degree(src)
+            # directed_graph[u][v]['influence'] = out_degree / out_degree_sum
+
+            # ========== influence = 1 / in_degree ==========
+            # noinspection PyCallingNonCallable
+            directed_graph[u][v]['influence'] = 1 / directed_graph.in_degree(v)
+        elif influence > 1:
+            raise Exception("Edge error: The influence of edge({}, {}) cannot be larger than 1.".format(u, v))
 
 
 def linear_threshold(graph, seeds: set, steps=0):
@@ -56,40 +124,9 @@ def linear_threshold(graph, seeds: set, steps=0):
                 raise Exception("seed ", seed, " is not in directed graph")
 
         # >>>>>>>>>> init thresholds <<<<<<<<<<
-        """
-        >>> list(graph.nodes)
-        [0, 1, 2]
-        >>> list(graph)
-        [0, 1, 2]
-        """
-        for i, threshold in directed_graph.nodes(data='threshold'):
-            if threshold is None:
-                directed_graph.nodes[i]['threshold'] = 0.5
-            elif threshold > 1:
-                raise Exception("Node error: The threshold of node-{} cannot be larger than 1.".format(i))
-
+        init_threshold4directed_graph(directed_graph)
         # >>>>>>>>>> init influences <<<<<<<<<<
-        """
-        >>> [e for e in graph.edges]
-        [(0, 1), (1, 2), (2, 3)]
-        """
-        for u, v, influence in directed_graph.edges(data='influence'):
-            if influence is None:
-                # ========== influence = out_degree / out_degree_sum ==========
-                # # noinspection PyCallingNonCallable
-                # out_degree = directed_graph.out_degree(u)
-                # # the sum of the out-degree of all in-edge nodes of v
-                # out_degree_sum = 0
-                # for src, dst in directed_graph.in_edges(v):
-                #     # noinspection PyCallingNonCallable
-                #     out_degree_sum += directed_graph.out_degree(src)
-                # directed_graph[u][v]['influence'] = out_degree / out_degree_sum
-
-                # ========== influence = 1 / in_degree ==========
-                # noinspection PyCallingNonCallable
-                directed_graph[u][v]['influence'] = 1 / directed_graph.in_degree(v)
-            elif influence > 1:
-                raise Exception("Edge error: The influence of edge({}, {}) cannot be larger than 1.".format(u, v))
+        init_influence4directed_graph(directed_graph)
 
         # perform diffusion
         seeds_duplicate = copy.deepcopy(seeds)

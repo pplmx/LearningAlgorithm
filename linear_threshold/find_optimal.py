@@ -6,6 +6,7 @@ import networkx
 from numpy import random
 
 from linear_threshold import LT_model
+from linear_threshold.LT_model import LinearThresholdModel
 
 
 def find_optimal(graph):
@@ -30,6 +31,11 @@ def find_optimal(graph):
             degree_list = degree_list[idx:]
             break
     minimal_dominating_set |= set(degree_0_node_list + degree_1_node_nbr_list)
+
+    # To init the graph
+    lt_model = LinearThresholdModel(graph)
+    graph = lt_model.get_graph()
+
     flag = 0
     for node, deg in degree_list[::-1]:
         flag += 1
