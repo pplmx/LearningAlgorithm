@@ -17,13 +17,13 @@ def find_optimal(graph):
 
     if graph.is_directed():
         # Right now, we handle nothing to directed graph.
-        in_degree_list = sorted(graph.in_dgree, key=lambda x: x[1])
+        in_degree_list = sorted(graph.in_dgree, key=lambda x: (x[1], x[0]))
         pass
 
     degree_list = list(graph.degree)
     start = datetime.now()
     # quick_sort_iterative(degree_list, 0, len(degree_list) - 1, 1)
-    degree_list = sorted(degree_list, key=lambda x: x[1])
+    degree_list = sorted(degree_list, key=lambda x: (x[1], x[0]))
     end = datetime.now()
     print("Sort cost: {}s".format(end - start))
 
