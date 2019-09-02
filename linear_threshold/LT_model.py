@@ -70,6 +70,7 @@ class LinearThresholdModel:
     def find_minimal_dominating_set(self):
         next_pre_dict = nx.dfs_predecessors(self.__graph)
         son_list = list(next_pre_dict.keys())
+        # The node set whose are dominated(covered) by minimal dominating set
         cover_set = set()
         for successor in nx.dfs_postorder_nodes(self.__graph):
             # if itself and its predecessor are both not in minimal_dominating_set
