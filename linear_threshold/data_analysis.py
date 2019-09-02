@@ -101,7 +101,7 @@ def draw_3d(edges_list):
 
 if __name__ == '__main__':
     start = datetime.now()
-    edges_data = read_data('../data/com-amazon.undirected.txt')
+    edges_data = read_data('../data/facebook_combined.txt')
     end = datetime.now()
     print("Read Data cost: {}s".format(end - start))
     graph = nx.Graph()
@@ -112,7 +112,9 @@ if __name__ == '__main__':
     # draw_3d(edges_data)
 
     lt_model = LinearThresholdModel(graph)
+    # graph = lt_model.get_graph()
     start = datetime.now()
+    # mds = find_optimal(graph)
     lt_model.find_minimal_dominating_set()
     end = datetime.now()
     mds = lt_model.get_mds()
@@ -121,6 +123,7 @@ if __name__ == '__main__':
     print("Its length: {}".format(len(mds)))
 
     # mds = {2, 532, 539, 541, 42, 563, 90, 612, 660, 662, 674, 677, 172, 686, 687, 690, 698, 701, 708, 711, 713, 719, 722, 728, 730, 731, 732, 740, 742, 748, 752, 753, 246, 761, 763, 773, 261, 282, 796, 799, 802, 803, 804, 807, 810, 811, 812, 813, 817, 819, 312, 825, 826, 830, 834, 325, 841, 330, 847, 850, 854, 857, 862, 869, 870, 872, 362, 875, 363, 373, 375, 893, 388, 400, 436, 451, 472}
+    # mds_facebook_ego = {0, 107, 3980, 3437, 686, 1684, 1912, 698, 348, 414}
     # lt_model.set_seeds(mds)
     # layer_i_nodes = lt_model.diffuse()
     # print("The length of layer_i_nodes: {}.".format(len(layer_i_nodes)))
