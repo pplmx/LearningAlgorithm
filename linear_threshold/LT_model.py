@@ -19,6 +19,8 @@ steps: int
     The number of steps to diffuse
     When steps <= 0, the model diffuses until no more nodes
     can be activated
+mds: set
+    minimal dominating set
 Return
 ------
 layer_i_nodes : list of list of activated nodes
@@ -40,6 +42,7 @@ class LinearThresholdModel:
         self.__graph = graph
         self.__seeds = seeds
         self.__steps = steps
+        self.__mds = set()
         self.__init_model()
 
     def __init_model(self):
@@ -63,6 +66,12 @@ class LinearThresholdModel:
             return self.__diffuse_all(self.__seeds)
         # perform diffusion for at most "steps" rounds only
         return self.__diffuse_k_rounds(self.__seeds, self.__steps)
+
+    def find_minimal_dominating_set(self):
+        next_pre_dict = nx.dfs_predecessors(self.__graph)
+        for successor in nx.dfs_postorder_nodes(self.__graph):
+            if successor not in self.__mds and next_pre_dict[successor] not in self.__mds:
+                pass
 
     def __diffuse_all(self, seeds: set):
         """
