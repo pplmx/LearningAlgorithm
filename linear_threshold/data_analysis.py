@@ -106,10 +106,14 @@ if __name__ == '__main__':
     print("Read Data cost: {}s".format(end - start))
     graph = nx.Graph()
     graph.add_edges_from(edges_data)
-    # nx.draw(graph, with_labels=True, font_weight='bold', node_color='y')
-    # plt.show()
 
-    # draw_3d(edges_data)
+    # custom_ego_list = [(1, 5), (1, 13), (1, 16), (1, 28),
+    #                    (5, 20), (5, 21), (5, 22), (5, 23), (5, 24), (5, 25), (5, 26), (5, 27),
+    #                    (13, 2), (13, 3), (13, 4), (13, 6), (13, 7), (13, 8), (13, 9), (13, 10), (13, 11), (13, 12),
+    #                    (16, 29), (16, 30), (16, 31), (16, 32), (16, 33), (16, 34),
+    #                    (28, 14), (28, 15), (28, 17), (28, 18), (28, 19)
+    #                    ]
+    # draw_3d(custom_ego_list)
 
     lt_model = LinearThresholdModel(graph)
     # graph = lt_model.get_graph()
@@ -118,6 +122,7 @@ if __name__ == '__main__':
     lt_model.find_minimal_dominating_set()
     end = datetime.now()
     mds = lt_model.get_mds()
+
     print("Find Optimal cost: {}s".format(end - start))
     print("The minimal dominating set: {}".format(mds))
     print("Its length: {}".format(len(mds)))
