@@ -8,9 +8,8 @@ from numpy import random
 from linear_threshold.LT_model import LinearThresholdModel
 
 
-def find_optimal(graph):
+def find_optimal_much_suitable4ego(graph):
     minimal_dominating_set = set()
-
     # To init the graph
     lt_model = LinearThresholdModel(graph, steps=1)
     graph = lt_model.get_graph()
@@ -53,6 +52,64 @@ def find_optimal(graph):
         minimal_dominating_set.add(node)
         # print(minimal_dominating_set)
         # next_seeds, this_activated = LT_model.diffuse_one_round(graph, minimal_dominating_set)
+        lt_model.set_seeds(minimal_dominating_set)
+        layer_i_nodes = lt_model.diffuse()
+        if len(set(layer_i_nodes[0] + layer_i_nodes[1])) == len(graph):
+            # return the optimal seeds
+            return list(minimal_dominating_set)
+
+
+def find_optimal_much_suitable4common(graph):
+    minimal_dominating_set = set()
+    dominated_set = set()
+
+    # To init the graph
+    lt_model = LinearThresholdModel(graph, steps=1)
+    graph = lt_model.get_graph()
+
+    if graph.is_directed():
+        # Right now, we handle nothing to directed graph.
+        in_degree_list = sorted(graph.in_dgree, key=lambda x: (x[1], x[0]))
+        pass
+
+    degree_list = list(graph.degree)
+    start = datetime.now()
+    degree_list = sorted(degree_list, key=lambda x: (x[1], x[0]))
+    end = datetime.now()
+    print("Sort cost: {}s".format(end - start))
+
+    # store the node whose degree is zero
+    degree_0_node_list = []
+    # store the node who has a neighbor whose degree is 1
+    degree_1_node_nbr_list = []
+
+    for idx, val in enumerate(degree_list):
+        if val[1] == 0:
+            degree_0_node_list.append(val[0])
+        elif val[1] == 1:
+            current_node_of_neighbor = list(graph[val[0]])[0]
+
+            # update dominated_set, i.e. the nodes whose are dominated by minimal_dominating_set
+            dominated_set |= set(graph[current_node_of_neighbor])
+            degree_1_node_nbr_list.append(current_node_of_neighbor)
+        else:
+            # remove the nodes whose degree is 0 or 1
+            degree_list = degree_list[idx:]
+            break
+    minimal_dominating_set |= set(degree_0_node_list + degree_1_node_nbr_list)
+
+    flag = 0
+    for node, deg in degree_list[::-1]:
+        flag += 1
+        if flag > 1 and node in minimal_dominating_set or node in dominated_set:
+            # except the 1st times
+            # if node is in minimal dominating set,
+            # or node is in dominated set, go to the next loop
+            continue
+        # update minimal dominating set and dominated set
+        minimal_dominating_set.add(node)
+        dominated_set |= set(graph[node])
+        # print(minimal_dominating_set)
         lt_model.set_seeds(minimal_dominating_set)
         layer_i_nodes = lt_model.diffuse()
         if len(set(layer_i_nodes[0] + layer_i_nodes[1])) == len(graph):

@@ -8,7 +8,7 @@ import plotly.graph_objs as go
 from plotly.offline import iplot
 
 from linear_threshold.LT_model import LinearThresholdModel
-from linear_threshold.find_optimal import find_optimal
+from linear_threshold.find_optimal import find_optimal_much_suitable4common
 
 
 def read_data(file):
@@ -101,7 +101,7 @@ def draw_3d(edges_list):
 
 if __name__ == '__main__':
     start = datetime.now()
-    edges_data = read_data('../data/facebook_combined.txt')
+    edges_data = read_data('../data/Email-Enron.directed.txt')
     end = datetime.now()
     print("Read Data cost: {}s".format(end - start))
     graph = nx.Graph()
@@ -116,9 +116,9 @@ if __name__ == '__main__':
     # draw_3d(custom_ego_list)
 
     lt_model = LinearThresholdModel(graph)
-    # graph = lt_model.get_graph()
+    graph = lt_model.get_graph()
     start = datetime.now()
-    # mds = find_optimal(graph)
+    # mds = find_optimal_much_suitable4common(graph)
     lt_model.find_minimal_dominating_set()
     end = datetime.now()
     mds = lt_model.get_mds()
