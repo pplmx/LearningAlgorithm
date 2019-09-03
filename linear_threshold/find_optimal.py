@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from datetime import datetime
 
 import networkx
 from numpy import random
@@ -8,8 +7,10 @@ from numpy import random
 from linear_threshold.LT_model import LinearThresholdModel
 
 
+# noinspection DuplicatedCode
 def find_optimal_much_suitable4ego(graph):
     minimal_dominating_set = set()
+
     # To init the graph
     lt_model = LinearThresholdModel(graph, steps=1)
     graph = lt_model.get_graph()
@@ -20,11 +21,7 @@ def find_optimal_much_suitable4ego(graph):
         pass
 
     degree_list = list(graph.degree)
-    start = datetime.now()
-    # quick_sort_iterative(degree_list, 0, len(degree_list) - 1, 1)
     degree_list = sorted(degree_list, key=lambda x: (x[1], x[0]))
-    end = datetime.now()
-    print("Sort cost: {}s".format(end - start))
 
     # store the node whose degree is zero
     degree_0_node_list = []
@@ -45,13 +42,10 @@ def find_optimal_much_suitable4ego(graph):
     flag = 0
     for node, deg in degree_list[::-1]:
         flag += 1
-        if flag > 1:
+        if flag > 1 and node in minimal_dominating_set:
             # except the 1st times, if node in minimal dominating set, go to the next loop
-            if node in minimal_dominating_set:
-                continue
+            continue
         minimal_dominating_set.add(node)
-        # print(minimal_dominating_set)
-        # next_seeds, this_activated = LT_model.diffuse_one_round(graph, minimal_dominating_set)
         lt_model.set_seeds(minimal_dominating_set)
         layer_i_nodes = lt_model.diffuse()
         if len(set(layer_i_nodes[0] + layer_i_nodes[1])) == len(graph):
@@ -59,6 +53,7 @@ def find_optimal_much_suitable4ego(graph):
             return list(minimal_dominating_set)
 
 
+# noinspection DuplicatedCode
 def find_optimal_much_suitable4common(graph):
     minimal_dominating_set = set()
     dominated_set = set()
@@ -73,10 +68,7 @@ def find_optimal_much_suitable4common(graph):
         pass
 
     degree_list = list(graph.degree)
-    start = datetime.now()
     degree_list = sorted(degree_list, key=lambda x: (x[1], x[0]))
-    end = datetime.now()
-    print("Sort cost: {}s".format(end - start))
 
     # store the node whose degree is zero
     degree_0_node_list = []
