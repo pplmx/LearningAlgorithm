@@ -71,17 +71,17 @@ class LinearThresholdModel:
         next_pre_dict = nx.dfs_predecessors(self.__graph)
         son_list = list(next_pre_dict.keys())
         # The node set whose are dominated(covered) by minimal dominating set
-        cover_set = set()
+        covered_set = set()
         for successor in nx.dfs_postorder_nodes(self.__graph):
             # if itself and its predecessor are both not in minimal_dominating_set
-            # meanwhile, itself is not in cover_set
+            # meanwhile, itself is not in covered_set
             if successor not in son_list:
                 continue
             predecessor = next_pre_dict[successor]
-            if successor not in self.__mds and successor not in cover_set and predecessor not in self.__mds:
+            if successor not in self.__mds and successor not in covered_set and predecessor not in self.__mds:
                 self.__mds.add(predecessor)
                 # get predecessor's neighbors, i.e. the nodes whose are covered by predecessor
-                cover_set |= set(self.__graph[predecessor])
+                covered_set |= set(self.__graph[predecessor])
 
     def __diffuse_all(self, seeds: set):
         """
