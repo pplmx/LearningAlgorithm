@@ -11,7 +11,7 @@ from linear_threshold.LT_model import LinearThresholdModel
 def find_optimal_much_suitable4ego(graph):
     minimal_dominating_set = set()
 
-    # To init the graph
+    # To init the graph, set steps=1
     lt_model = LinearThresholdModel(graph, steps=1)
     graph = lt_model.get_graph()
 
@@ -20,24 +20,30 @@ def find_optimal_much_suitable4ego(graph):
         in_degree_list = sorted(graph.in_dgree, key=lambda x: (x[1], x[0]))
         pass
 
-    degree_list = list(graph.degree)
-    degree_list = sorted(degree_list, key=lambda x: (x[1], x[0]))
+    # graph: [(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)]
+    # list(graph.degree)
+    # [(1, 2), (2, 2), (3, 4), (4, 3), (5, 3), (6, 2)]
+    # after sort
+    # [(1, 2), (2, 2), (6, 2), (4, 3), (5, 3), (3, 4)]
+    degree_list = sorted(list(graph.degree), key=lambda x: (x[1], x[0]))
 
     # store the node whose degree is zero
-    degree_0_node_list = []
+    degree_0_node_set = set()
     # store the node who has a neighbor whose degree is 1
-    degree_1_node_nbr_list = []
+    degree_1_node_nbr_set = set()
 
     for idx, val in enumerate(degree_list):
         if val[1] == 0:
-            degree_0_node_list.append(val[0])
+            degree_0_node_set.add(val[0])
         elif val[1] == 1:
-            degree_1_node_nbr_list.append(list(graph[val[0]])[0])
+            # because the degree is 1, so node's neighbor is unique.
+            degree_1_node_nbr_set.add(list(graph[val[0]])[0])
         else:
             # remove the nodes whose degree is 0 or 1
+            # to reduce the potential redundant loop
             degree_list = degree_list[idx:]
             break
-    minimal_dominating_set |= set(degree_0_node_list + degree_1_node_nbr_list)
+    minimal_dominating_set |= degree_0_node_set | degree_1_node_nbr_set
 
     flag = 0
     for node, deg in degree_list[::-1]:
@@ -67,28 +73,30 @@ def find_optimal_much_suitable4common(graph):
         in_degree_list = sorted(graph.in_dgree, key=lambda x: (x[1], x[0]))
         pass
 
-    degree_list = list(graph.degree)
-    degree_list = sorted(degree_list, key=lambda x: (x[1], x[0]))
+    print(list(graph.degree))
+    degree_list = sorted(list(graph.degree), key=lambda x: (x[1], x[0]))
+    print(degree_list)
 
     # store the node whose degree is zero
-    degree_0_node_list = []
+    degree_0_node_set = set()
     # store the node who has a neighbor whose degree is 1
-    degree_1_node_nbr_list = []
+    degree_1_node_nbr_set = set()
 
     for idx, val in enumerate(degree_list):
         if val[1] == 0:
-            degree_0_node_list.append(val[0])
+            degree_0_node_set.add(val[0])
         elif val[1] == 1:
-            current_node_of_neighbor = list(graph[val[0]])[0]
+            # because the degree is 1, so node's neighbor is unique.
+            neighbor_of_current_node = list(graph[val[0]])[0]
 
             # update dominated_set, i.e. the nodes whose are dominated by minimal_dominating_set
-            dominated_set |= set(graph[current_node_of_neighbor])
-            degree_1_node_nbr_list.append(current_node_of_neighbor)
+            dominated_set |= set(graph[neighbor_of_current_node])
+            degree_1_node_nbr_set.add(neighbor_of_current_node)
         else:
             # remove the nodes whose degree is 0 or 1
             degree_list = degree_list[idx:]
             break
-    minimal_dominating_set |= set(degree_0_node_list + degree_1_node_nbr_list)
+    minimal_dominating_set |= degree_0_node_set | degree_1_node_nbr_set
 
     flag = 0
     for node, deg in degree_list[::-1]:
@@ -259,8 +267,8 @@ if __name__ == '__main__':
                        (16, 29), (16, 30), (16, 31), (16, 32), (16, 33), (16, 34),
                        (28, 14), (28, 15), (28, 17), (28, 18), (28, 19)
                        ]
-    # g.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
-    g.add_edges_from(custom_ego_list)
+    g.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
+    # g.add_edges_from(custom_ego_list)
     print(find_optimal_much_suitable4common(g))
 
     # To check if the rate of custom quick sort is normal
