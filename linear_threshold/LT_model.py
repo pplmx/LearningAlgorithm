@@ -67,7 +67,7 @@ class LinearThresholdModel:
         # perform diffusion for at most "steps" rounds only
         return self.__diffuse_k_rounds(self.__seeds, self.__steps)
 
-    def find_minimal_dominating_set(self):
+    def find_mds_basing_dfs(self):
         next_pre_dict = nx.dfs_predecessors(self.__graph)
         son_list = list(next_pre_dict.keys())
         # The node set whose are dominated(covered) by minimal dominating set

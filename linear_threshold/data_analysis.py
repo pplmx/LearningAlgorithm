@@ -119,7 +119,7 @@ if __name__ == '__main__':
     graph = lt_model.get_graph()
     start = datetime.now()
     mds = find_optimal(graph)
-    # lt_model.find_minimal_dominating_set()
+    # lt_model.find_mds_basing_dfs()
     end = datetime.now()
     # mds = lt_model.get_mds()
 
