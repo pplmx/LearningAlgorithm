@@ -73,9 +73,7 @@ def find_optimal_much_suitable4common(graph):
         in_degree_list = sorted(graph.in_dgree, key=lambda x: (x[1], x[0]))
         pass
 
-    print(list(graph.degree))
     degree_list = sorted(list(graph.degree), key=lambda x: (x[1], x[0]))
-    print(degree_list)
 
     # store the node whose degree is zero
     degree_0_node_set = set()
