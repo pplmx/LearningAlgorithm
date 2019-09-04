@@ -7,12 +7,17 @@ from numpy import random
 from linear_threshold.LT_model import LinearThresholdModel
 
 
-# noinspection DuplicatedCode
-def find_optimal_much_suitable4ego(graph):
+def find_optimal(graph):
+    """
+        To find the minimal dominating set
+    :param graph:
+    :return: minimal_dominating_set
+    """
     minimal_dominating_set = set()
+    dominated_set = set()
 
-    # To init the graph, set steps=1
-    lt_model = LinearThresholdModel(graph, steps=1)
+    # To init the graph (This process of initialization is mainly to init directed graph.)
+    lt_model = LinearThresholdModel(graph)
     graph = lt_model.get_graph()
 
     if graph.is_directed():
@@ -37,54 +42,6 @@ def find_optimal_much_suitable4ego(graph):
             degree_0_node_set.add(val[0])
         elif val[1] == 1:
             # because the degree is 1, so node's neighbor is unique.
-            degree_1_node_nbr_set.add(list(graph[val[0]])[0])
-        else:
-            # remove the nodes whose degree is 0 or 1
-            # to reduce the potential redundant loop
-            degree_list = degree_list[idx:]
-            break
-    minimal_dominating_set |= degree_0_node_set | degree_1_node_nbr_set
-
-    flag = 0
-    for node, deg in degree_list[::-1]:
-        flag += 1
-        if flag > 1 and node in minimal_dominating_set:
-            # except the 1st times, if node in minimal dominating set, go to the next loop
-            continue
-        minimal_dominating_set.add(node)
-        lt_model.set_seeds(minimal_dominating_set)
-        layer_i_nodes = lt_model.diffuse()
-        if len(set(layer_i_nodes[0] + layer_i_nodes[1])) == len(graph):
-            # return the optimal seeds
-            return list(minimal_dominating_set)
-
-
-# noinspection DuplicatedCode
-def find_optimal_much_suitable4common(graph):
-    minimal_dominating_set = set()
-    dominated_set = set()
-
-    # To init the graph
-    lt_model = LinearThresholdModel(graph, steps=1)
-    graph = lt_model.get_graph()
-
-    if graph.is_directed():
-        # Right now, we handle nothing to directed graph.
-        in_degree_list = sorted(graph.in_dgree, key=lambda x: (x[1], x[0]))
-        pass
-
-    degree_list = sorted(list(graph.degree), key=lambda x: (x[1], x[0]))
-
-    # store the node whose degree is zero
-    degree_0_node_set = set()
-    # store the node who has a neighbor whose degree is 1
-    degree_1_node_nbr_set = set()
-
-    for idx, val in enumerate(degree_list):
-        if val[1] == 0:
-            degree_0_node_set.add(val[0])
-        elif val[1] == 1:
-            # because the degree is 1, so node's neighbor is unique.
             neighbor_of_current_node = list(graph[val[0]])[0]
 
             # update dominated_set, i.e. the nodes whose are dominated by minimal_dominating_set
@@ -92,27 +49,20 @@ def find_optimal_much_suitable4common(graph):
             degree_1_node_nbr_set.add(neighbor_of_current_node)
         else:
             # remove the nodes whose degree is 0 or 1
+            # to reduce the potential redundant loop
             degree_list = degree_list[idx:]
             break
     minimal_dominating_set |= degree_0_node_set | degree_1_node_nbr_set
 
-    flag = 0
     for node, deg in degree_list[::-1]:
-        flag += 1
-        if flag > 1 and node in minimal_dominating_set or node in dominated_set:
-            # except the 1st times
+        if node in minimal_dominating_set or node in dominated_set:
             # if node is in minimal dominating set,
             # or node is in dominated set, go to the next loop
             continue
         # update minimal dominating set and dominated set
         minimal_dominating_set.add(node)
         dominated_set |= set(graph[node])
-        # print(minimal_dominating_set)
-        lt_model.set_seeds(minimal_dominating_set)
-        layer_i_nodes = lt_model.diffuse()
-        if len(set(layer_i_nodes[0] + layer_i_nodes[1])) == len(graph):
-            # return the optimal seeds
-            return list(minimal_dominating_set)
+    return minimal_dominating_set
 
 
 def quick_sort4tuple_list(unsorted_list, idx=0, is_ordered_by_ascend=True):
@@ -267,7 +217,7 @@ if __name__ == '__main__':
                        ]
     g.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
     # g.add_edges_from(custom_ego_list)
-    print(find_optimal_much_suitable4common(g))
+    print(find_optimal(g))
 
     # To check if the rate of custom quick sort is normal
     # tuple_l = [(i, i + 1) for i in range(2_000_000)]
