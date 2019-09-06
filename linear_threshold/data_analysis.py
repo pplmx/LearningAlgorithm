@@ -15,6 +15,8 @@ def read_data(file):
     dataset = []
     with open(file) as fr:
         for line in fr.readlines():
+            if line.startswith("#"):
+                continue
             tmp = line.split()
             dataset.append((int(tmp[0]), int(tmp[1])))
     return dataset
@@ -101,11 +103,15 @@ def draw_3d(edges_list):
 
 if __name__ == '__main__':
     start = datetime.now()
-    edges_data = read_data('../data/facebook_combined.txt')
+    edges_data = read_data('../data/com-amazon.undirected.txt')
     end = datetime.now()
     print("Read Data cost: {}s".format(end - start))
+
+    start = datetime.now()
     graph = nx.Graph()
     graph.add_edges_from(edges_data)
+    end = datetime.now()
+    print("Build graph by networkx cost: {}s".format(end - start))
 
     # custom_ego_list = [(1, 5), (1, 13), (1, 16), (1, 28),
     #                    (5, 20), (5, 21), (5, 22), (5, 23), (5, 24), (5, 25), (5, 26), (5, 27),
