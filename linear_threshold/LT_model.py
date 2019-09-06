@@ -67,6 +67,9 @@ class LinearThresholdModel:
         # perform diffusion for at most "steps" rounds only
         return self.__diffuse_k_rounds(self.__seeds, self.__steps)
 
+    def find_mds(self):
+        pass
+
     def find_mds_basing_dfs(self):
         next_pre_dict = nx.dfs_predecessors(self.__graph)
         son_list = list(next_pre_dict.keys())
