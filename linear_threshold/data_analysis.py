@@ -124,10 +124,8 @@ if __name__ == '__main__':
     lt_model = LinearThresholdModel(graph)
     graph = lt_model.get_graph()
     start = datetime.now()
-    # mds = find_optimal(graph)
-    mds = lt_model.find_mds_basing_optimal()
+    mds = lt_model.find_mds_basing_dfs()
     end = datetime.now()
-    # mds = lt_model.get_mds()
 
     print("Find Optimal cost: {}s".format(end - start))
     print("The minimal dominating set: {}".format(mds))
@@ -135,6 +133,8 @@ if __name__ == '__main__':
 
     # mds = {2, 532, 539, 541, 42, 563, 90, 612, 660, 662, 674, 677, 172, 686, 687, 690, 698, 701, 708, 711, 713, 719, 722, 728, 730, 731, 732, 740, 742, 748, 752, 753, 246, 761, 763, 773, 261, 282, 796, 799, 802, 803, 804, 807, 810, 811, 812, 813, 817, 819, 312, 825, 826, 830, 834, 325, 841, 330, 847, 850, 854, 857, 862, 869, 870, 872, 362, 875, 363, 373, 375, 893, 388, 400, 436, 451, 472}
     # mds_facebook_ego = {0, 107, 3980, 3437, 686, 1684, 1912, 698, 348, 414}
-    # lt_model.set_seeds(mds_facebook_ego)
+    # mds = {1, 2, 129, 13, 783, 400, 658, 148, 149, 790, 532, 282, 28, 796, 798, 159, 799, 803, 164, 810, 686, 53, 695, 186, 67, 451, 325, 580, 201, 330, 205, 720, 337, 722, 849, 593, 86, 728, 217, 472, 91, 220, 732, 228, 742, 748, 495, 751, 752, 626, 373, 246, 375}
+    #
+    # lt_model.set_seeds(mds)
     # layer_i_nodes = lt_model.diffuse()
     # print("The length of layer_i_nodes: {}.".format(len(layer_i_nodes)))

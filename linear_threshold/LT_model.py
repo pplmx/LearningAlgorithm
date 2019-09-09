@@ -19,8 +19,6 @@ steps: int
     The number of steps to diffuse
     When steps <= 0, the model diffuses until no more nodes
     can be activated
-mds: set
-    minimal dominating set
 Return
 ------
 layer_i_nodes : list of list of activated nodes
@@ -42,7 +40,6 @@ class LinearThresholdModel:
         self.__graph = graph
         self.__seeds = seeds
         self.__steps = steps
-        self.__mds = set()
         self.__init_model()
 
     def __init_model(self):
@@ -113,25 +110,26 @@ class LinearThresholdModel:
             # update minimal dominating set and dominated set
             minimal_dominating_set.add(node)
             dominated_set |= set(self.__graph[node])
-        # finally, return minimal dominating set
-        self.__mds = minimal_dominating_set
         return minimal_dominating_set
 
     def find_mds_basing_dfs(self):
+        minimal_dominating_set = set()
+
         next_pre_dict = nx.dfs_predecessors(self.__graph)
-        son_list = list(next_pre_dict.keys())
+        successor_list = list(next_pre_dict.keys())
         # The node set whose are dominated(covered) by minimal dominating set
         covered_set = set()
-        for successor in nx.dfs_postorder_nodes(self.__graph):
+        for node in self.__graph:
             # if itself and its predecessor are both not in minimal_dominating_set
             # meanwhile, itself is not in covered_set
-            if successor not in son_list:
+            if node not in successor_list:
                 continue
-            predecessor = next_pre_dict[successor]
-            if successor not in self.__mds and successor not in covered_set and predecessor not in self.__mds:
-                self.__mds.add(predecessor)
+            predecessor = next_pre_dict[node]
+            if node not in minimal_dominating_set and node not in covered_set and predecessor not in minimal_dominating_set:
+                minimal_dominating_set.add(predecessor)
                 # get predecessor's neighbors, i.e. the nodes whose are covered by predecessor
                 covered_set |= set(self.__graph[predecessor])
+        return minimal_dominating_set
 
     def __diffuse_all(self, seeds: set):
         """
@@ -248,9 +246,6 @@ class LinearThresholdModel:
 
     def set_steps(self, steps):
         self.__steps = steps
-
-    def get_mds(self):
-        return self.__mds
 
     def get_graph(self):
         return self.__graph
