@@ -112,10 +112,10 @@ class LinearThresholdModel:
             dominated_set |= set(self.__graph[node])
         return minimal_dominating_set
 
-    def find_mds_basing_dfs(self):
+    def find_mds_basing_dfs(self, source=None):
         minimal_dominating_set = set()
 
-        next_pre_dict = nx.dfs_predecessors(self.__graph)
+        next_pre_dict = nx.dfs_predecessors(self.__graph, source)
         successor_list = list(next_pre_dict.keys())
         # The node set whose are dominated(covered) by minimal dominating set
         covered_set = set()
