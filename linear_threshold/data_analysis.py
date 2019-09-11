@@ -124,7 +124,7 @@ if __name__ == '__main__':
     lt_model = LinearThresholdModel(graph)
     graph = lt_model.get_graph()
     start = datetime.now()
-    mds = lt_model.find_mds_basing_dfs()
+    mds = lt_model.find_mds_basing_random_degree()
     end = datetime.now()
 
     print("Find Optimal cost: {}s".format(end - start))

@@ -8,6 +8,8 @@ import networkx as nx
 # -----------------------------------
 #  Diffusion Models
 # -----------------------------------
+import numpy
+
 """
 Parameters
 ----------
@@ -64,7 +66,7 @@ class LinearThresholdModel:
         # perform diffusion for at most "steps" rounds only
         return self.__diffuse_k_rounds(self.__seeds, self.__steps)
 
-    def find_mds_basing_optimal(self):
+    def find_mds_basing_max_degree(self):
         minimal_dominating_set = set()
         dominated_set = set()
 
@@ -103,6 +105,52 @@ class LinearThresholdModel:
         minimal_dominating_set |= degree_0_node_set | degree_1_node_nbr_set
 
         for node, deg in degree_list[::-1]:
+            if node in minimal_dominating_set or node in dominated_set:
+                # if node is in minimal dominating set,
+                # or node is in dominated set, go to the next loop
+                continue
+            # update minimal dominating set and dominated set
+            minimal_dominating_set.add(node)
+            dominated_set |= set(self.__graph[node])
+        return minimal_dominating_set
+
+    def find_mds_basing_random_degree(self):
+        minimal_dominating_set = set()
+        dominated_set = set()
+
+        if self.__graph.is_directed():
+            # Right now, we handle nothing to directed graph.
+            in_degree_list = sorted(self.__graph.in_dgree, key=lambda x: (x[1], x[0]))
+            pass
+
+        degree_list = sorted(list(self.__graph.degree), key=lambda x: (x[1], x[0]))
+
+        # store the node whose degree is zero
+        degree_0_node_set = set()
+        # store the node who has a neighbor whose degree is 1
+        degree_1_node_nbr_set = set()
+
+        for idx, val in enumerate(degree_list):
+            if val[1] == 0:
+                degree_0_node_set.add(val[0])
+            elif val[1] == 1:
+                # because the degree is 1, so node's neighbor is unique.
+                neighbor_of_current_node = list(self.__graph[val[0]])[0]
+
+                # update dominated_set, i.e. the nodes whose are dominated by minimal_dominating_set
+                dominated_set |= set(self.__graph[neighbor_of_current_node])
+                degree_1_node_nbr_set.add(neighbor_of_current_node)
+            else:
+                # remove the nodes whose degree is 0 or 1
+                # to reduce the potential redundant loop
+                degree_list = degree_list[idx:]
+                break
+        minimal_dominating_set |= degree_0_node_set | degree_1_node_nbr_set
+
+        # ensuring the degree_list is random, to shuffle the list
+        numpy.random.shuffle(degree_list)
+
+        for node, deg in degree_list:
             if node in minimal_dominating_set or node in dominated_set:
                 # if node is in minimal dominating set,
                 # or node is in dominated set, go to the next loop
