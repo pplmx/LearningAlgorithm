@@ -66,6 +66,10 @@ class LinearThresholdModel:
         return self.__diffuse_k_rounds(self.__seeds, self.__steps)
 
     def find_mds_basing_max_degree(self):
+        """
+            find the minimal dominating set
+        :return:
+        """
         minimal_dominating_set = set()
         dominated_set = set()
 
@@ -104,14 +108,25 @@ class LinearThresholdModel:
         minimal_dominating_set |= degree_0_node_set | degree_1_node_nbr_set
 
         for node, deg in degree_list[::-1]:
-            if node in minimal_dominating_set or node in dominated_set:
-                # if node is in minimal dominating set,
-                # or node is in dominated set, go to the next loop
-                continue
-            # update minimal dominating set and dominated set
-            minimal_dominating_set.add(node)
-            dominated_set |= set(self.__graph[node])
+            if node not in minimal_dominating_set and node not in dominated_set:
+                # update minimal dominating set and dominated set
+                minimal_dominating_set.add(node)
+                dominated_set |= set(self.__graph[node])
         return minimal_dominating_set
+
+    def find_mbs(self):
+        """
+            find the minimal burning sequence
+        :return:
+        """
+        minimal_burning_sequence_set = set()
+        burned_set = set()
+        degree_list = sorted(list(self.__graph.degree), key=lambda x: (x[1], x[0]), reverse=True)
+        for node, deg in degree_list:
+            if node not in minimal_burning_sequence_set and node not in burned_set:
+                minimal_burning_sequence_set.add(node)
+                burned_set |= set(self.__graph[node])
+        return minimal_burning_sequence_set
 
     def find_mds_basing_dfs(self, source=None):
         minimal_dominating_set = set()
