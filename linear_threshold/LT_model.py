@@ -14,8 +14,10 @@ Parameters
 ----------
 graph : networkx graph
     The number of nodes.
-seeds: list of nodes
+seeds: set of nodes
     The seed nodes of the graph
+burning_seq: list
+    burning sequence, it's ordered.
 steps: int
     The number of steps to diffuse
     When steps <= 0, the model diffuses until no more nodes
@@ -37,9 +39,10 @@ if the graph is a directed graph
 
 
 class LinearThresholdModel:
-    def __init__(self, graph, seeds: set = None, steps: int = 0):
+    def __init__(self, graph, seeds: set = None, burning_seq: list = None, steps: int = 0):
         self.__graph = graph
         self.__seeds = seeds
+        self.__burning_seq = burning_seq
         self.__steps = steps
         self.__init_model()
 
@@ -64,6 +67,33 @@ class LinearThresholdModel:
             return self.__diffuse_all(self.__seeds)
         # perform diffusion for at most "steps" rounds only
         return self.__diffuse_k_rounds(self.__seeds, self.__steps)
+
+    def link_the_fire(self):
+        burned_set = set()
+        burning_set = set()
+        for i in self.__burning_seq:
+            # each element in burning_seq should be burning.
+            burning_set.add(i)
+            if i not in burned_set:
+                # It has been burned out.
+                burned_set.add(i)
+                burning_set.remove(i)
+                # It links the fire to its neighbors. Its neighbors are burning(Remove the neighbors who had been burned).
+                burning_set |= set(self.__graph[i]) - burned_set
+                for j in copy.deepcopy(burning_set):
+                    if j not in burned_set:
+                        burned_set.add(j)
+                        burning_set.remove(j)
+                        burning_set |= set(self.__graph[j]) - burned_set
+            else:
+                burning_set.remove(i)
+
+    def fire(self, burning_set, burned_set):
+        if len(burned_set | burning_set) < len(self.__graph):
+            for i in burning_set:
+                burned_set.add(i)
+                burning_set |= set(self.__graph[i]) - burned_set
+                self.fire(burning_set, burned_set)
 
     def find_mds_basing_max_degree(self):
         """
