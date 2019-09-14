@@ -102,16 +102,13 @@ def draw_3d(edges_list):
 
 if __name__ == '__main__':
     mds_start = datetime.now()
-    edges_data = read_data('../data/com-amazon.undirected.txt')
+    edges_data = read_data('../data/CA-GrQc.txt')
     mds_end = datetime.now()
     print("Read Data cost: {}s".format(mds_end - mds_start))
 
     mds_start = datetime.now()
     graph = nx.Graph()
-    test_data = [(1, 2), (1, 3), (2, 3), (2, 4), (3, 6), (3, 8), (3, 10), (3, 11), (4, 5), (4, 7), (5, 6), (6, 7),
-                 (6, 11), (7, 12), (8, 9), (8, 10), (9, 10), (10, 11), (11, 12), (12, 13), (12, 14), (13, 16), (14, 15),
-                 (15, 16,), (15, 17), (15, 18), (16, 17)]
-    graph.add_edges_from(test_data)
+    graph.add_edges_from(edges_data)
     mds_end = datetime.now()
     print("Build graph by networkx cost: {}s".format(mds_end - mds_start))
 
@@ -141,9 +138,9 @@ if __name__ == '__main__':
     print("The minimal burning set: {}".format(mbs))
     print("Its length: {}".format(len(mbs)))
 
-    lt_model.set_burning_seq([3, 15])
-    print(lt_model.link_the_fire())
-    print(len(graph))
+    # lt_model.set_burning_seq([100, 334])
+    # print(lt_model.link_the_fire())
+    # print(len(graph))
 
     # mds = {2, 532, 539, 541, 42, 563, 90, 612, 660, 662, 674, 677, 172, 686, 687, 690, 698, 701, 708, 711, 713, 719, 722, 728, 730, 731, 732, 740, 742, 748, 752, 753, 246, 761, 763, 773, 261, 282, 796, 799, 802, 803, 804, 807, 810, 811, 812, 813, 817, 819, 312, 825, 826, 830, 834, 325, 841, 330, 847, 850, 854, 857, 862, 869, 870, 872, 362, 875, 363, 373, 375, 893, 388, 400, 436, 451, 472}
     # mds_facebook_ego = {0, 107, 3980, 3437, 686, 1684, 1912, 698, 348, 414}
