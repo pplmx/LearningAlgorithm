@@ -61,20 +61,29 @@ class LinearThresholdModel:
 
             self.__graph = copy.deepcopy(directed_graph)
 
-    def diffuse(self):
-        if self.__steps <= 0:
+    def diffuse(self, seeds=None, steps=None):
+        if seeds is None:
+            seeds = self.__seeds
+        if steps is None:
+            steps = self.__steps
+        if steps <= 0:
             # perform diffusion until no more nodes can be activated
-            return self.__diffuse_all(self.__seeds)
+            return self.__diffuse_all(seeds)
         # perform diffusion for at most "steps" rounds only
-        return self.__diffuse_k_rounds(self.__seeds, self.__steps)
+        return self.__diffuse_k_rounds(seeds, steps)
 
-    def link_the_fire(self):
+    def link_the_fire(self, burning_seq=None):
+        if burning_seq is None:
+            burning_seq = self.__burning_seq
         burned_set = set()
         burning_set = set()
-        for i in self.__burning_seq:
+        for i in burning_seq:
             if i not in burned_set:
                 burning_set.add(i)
                 self.__fire(burning_set, burned_set)
+                print("burning_set: ", burning_set)
+                print("burned_set: ", burned_set)
+                print()
         return len(burned_set | burning_set)
 
     def find_mds_basing_max_degree(self):
@@ -140,9 +149,14 @@ class LinearThresholdModel:
             if val[0] not in burned_set and val[0] not in burning_set:
                 minimal_burning_sequence_list.append(val[0])
                 burned_set.add(val[0])
+                print("val[0]: ", val[0])
+                print("set(self.__graph[val[0]]) - burned_set: ", set(self.__graph[val[0]]) - burned_set)
                 burning_set |= set(self.__graph[val[0]]) - burned_set
                 if idx > 0:
                     self.__fire(burning_set, burned_set)
+                print("burning_set: ", burning_set)
+                print("burned_set: ", burned_set)
+                print()
         return minimal_burning_sequence_list
 
     def find_mds_basing_dfs(self, source=None):
