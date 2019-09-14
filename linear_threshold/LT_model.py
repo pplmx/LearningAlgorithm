@@ -72,28 +72,15 @@ class LinearThresholdModel:
         burned_set = set()
         burning_set = set()
         for i in self.__burning_seq:
-            # each element in burning_seq should be burning.
-            burning_set.add(i)
             if i not in burned_set:
-                # It has been burned out.
-                burned_set.add(i)
-                burning_set.remove(i)
-                # It links the fire to its neighbors. Its neighbors are burning(Remove the neighbors who had been burned).
-                burning_set |= set(self.__graph[i]) - burned_set
-                for j in copy.deepcopy(burning_set):
-                    if j not in burned_set:
-                        burned_set.add(j)
-                        burning_set.remove(j)
-                        burning_set |= set(self.__graph[j]) - burned_set
-            else:
-                burning_set.remove(i)
+                burning_set.add(i)
+                self.fire(burning_set, burned_set)
 
     def fire(self, burning_set, burned_set):
-        if len(burned_set | burning_set) < len(self.__graph):
-            for i in burning_set:
-                burned_set.add(i)
-                burning_set |= set(self.__graph[i]) - burned_set
-                self.fire(burning_set, burned_set)
+        for i in burning_set:
+            burned_set.add(i)
+            burning_set.remove(i)
+            burning_set |= set(self.__graph[i]) - burned_set
 
     def find_mds_basing_max_degree(self):
         """
