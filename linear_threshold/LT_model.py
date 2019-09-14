@@ -74,9 +74,9 @@ class LinearThresholdModel:
         for i in self.__burning_seq:
             if i not in burned_set:
                 burning_set.add(i)
-                self.fire(burning_set, burned_set)
+                self.__fire(burning_set, burned_set)
 
-    def fire(self, burning_set, burned_set):
+    def __fire(self, burning_set, burned_set):
         for i in burning_set:
             burned_set.add(i)
             burning_set.remove(i)
