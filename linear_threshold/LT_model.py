@@ -148,10 +148,7 @@ class LinearThresholdModel:
                 burned_set.add(val[0])
                 burning_set |= set(self.__graph[val[0]]) - burned_set
                 if idx > 0:
-                    # remove the nodes who are burned on last round from burning_set
-                    # meanwhile, add them to burned_set
-                    burning_set -= set(self.__graph[degree_list[idx - 1][0]])
-                    burned_set |= set(self.__graph[degree_list[idx - 1][0]])
+                    self.__fire(burning_set, burned_set)
         return minimal_burning_sequence_list
 
     def find_mds_basing_dfs(self, source=None):

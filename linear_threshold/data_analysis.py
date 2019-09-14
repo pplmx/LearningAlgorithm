@@ -102,7 +102,7 @@ def draw_3d(edges_list):
 
 if __name__ == '__main__':
     mds_start = datetime.now()
-    edges_data = read_data('../data/facebook/OF_one-mode_weightedmsg_Newman.txt')
+    edges_data = read_data('../data/com-amazon.undirected.txt')
     mds_end = datetime.now()
     print("Read Data cost: {}s".format(mds_end - mds_start))
 
@@ -137,6 +137,13 @@ if __name__ == '__main__':
     print("Find mbs cost: {}s".format(mbs_end - mbs_start))
     print("The minimal burning set: {}".format(mbs))
     print("Its length: {}".format(len(mbs)))
+
+    # lt_model.set_burning_seq([107])
+    # for node, deg in list(graph.degree):
+    #     if node == 107:
+    #         print(node, deg)
+    # print(lt_model.link_the_fire())
+    # print(len(graph))
 
     # mds = {2, 532, 539, 541, 42, 563, 90, 612, 660, 662, 674, 677, 172, 686, 687, 690, 698, 701, 708, 711, 713, 719, 722, 728, 730, 731, 732, 740, 742, 748, 752, 753, 246, 761, 763, 773, 261, 282, 796, 799, 802, 803, 804, 807, 810, 811, 812, 813, 817, 819, 312, 825, 826, 830, 834, 325, 841, 330, 847, 850, 854, 857, 862, 869, 870, 872, 362, 875, 363, 373, 375, 893, 388, 400, 436, 451, 472}
     # mds_facebook_ego = {0, 107, 3980, 3437, 686, 1684, 1912, 698, 348, 414}
