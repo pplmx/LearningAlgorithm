@@ -103,7 +103,7 @@ def draw_3d(edges_list):
 
 if __name__ == '__main__':
     mds_start = datetime.now()
-    edges_data = read_data('../data/com-amazon.undirected.txt')
+    edges_data = read_data('../data/facebook/OF_one-mode_weightedmsg_Newman.txt')
     mds_end = datetime.now()
     print("Read Data cost: {}s".format(mds_end - mds_start))
 

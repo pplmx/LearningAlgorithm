@@ -75,9 +75,10 @@ class LinearThresholdModel:
             if i not in burned_set:
                 burning_set.add(i)
                 self.__fire(burning_set, burned_set)
+        return len(burned_set | burning_set)
 
     def __fire(self, burning_set, burned_set):
-        for i in burning_set:
+        for i in copy.deepcopy(burning_set):
             burned_set.add(i)
             burning_set.remove(i)
             burning_set |= set(self.__graph[i]) - burned_set
@@ -136,14 +137,22 @@ class LinearThresholdModel:
             find the minimal burning sequence
         :return:
         """
-        minimal_burning_sequence_set = set()
+        minimal_burning_sequence_list = []
         burned_set = set()
+        burning_set = set()
+        # Get a list reversely ordered by degree. e.g. [(2, 3), (4, 2), (3, 2), (1, 1)]
         degree_list = sorted(list(self.__graph.degree), key=lambda x: (x[1], x[0]), reverse=True)
-        for node, deg in degree_list:
-            if node not in minimal_burning_sequence_set and node not in burned_set:
-                minimal_burning_sequence_set.add(node)
-                burned_set |= set(self.__graph[node])
-        return minimal_burning_sequence_set
+        for idx, val in enumerate(degree_list):
+            if val[0] not in burned_set and val[0] not in burning_set:
+                minimal_burning_sequence_list.append(val[0])
+                burned_set.add(val[0])
+                burning_set |= set(self.__graph[val[0]]) - burned_set
+                if idx > 0:
+                    # remove the nodes who are burned on last round from burning_set
+                    # meanwhile, add them to burned_set
+                    burning_set -= set(self.__graph[degree_list[idx - 1][0]])
+                    burned_set |= set(self.__graph[degree_list[idx - 1][0]])
+        return minimal_burning_sequence_list
 
     def find_mds_basing_dfs(self, source=None):
         minimal_dominating_set = set()
@@ -279,6 +288,9 @@ class LinearThresholdModel:
 
     def set_steps(self, steps):
         self.__steps = steps
+
+    def set_burning_seq(self, burning_seq):
+        self.__burning_seq = burning_seq
 
     def get_graph(self):
         return self.__graph
