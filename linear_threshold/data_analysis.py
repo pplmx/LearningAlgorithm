@@ -8,7 +8,6 @@ import plotly.graph_objs as go
 from plotly.offline import iplot
 
 from linear_threshold.LT_model import LinearThresholdModel
-from linear_threshold.find_optimal import find_optimal
 
 
 def read_data(file):
