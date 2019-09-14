@@ -77,12 +77,6 @@ class LinearThresholdModel:
                 self.__fire(burning_set, burned_set)
         return len(burned_set | burning_set)
 
-    def __fire(self, burning_set, burned_set):
-        for i in copy.deepcopy(burning_set):
-            burned_set.add(i)
-            burning_set.remove(i)
-            burning_set |= set(self.__graph[i]) - burned_set
-
     def find_mds_basing_max_degree(self):
         """
             find the minimal dominating set
@@ -169,6 +163,14 @@ class LinearThresholdModel:
                 # get predecessor's neighbors, i.e. the nodes whose are covered by predecessor
                 covered_set |= set(self.__graph[predecessor])
         return minimal_dominating_set
+
+    def __fire(self, burning_set, burned_set):
+        for i in copy.deepcopy(burning_set):
+            # a burning node is going to be burned
+            # meanwhile, it burns its all neighbor nodes who are not in burned_set
+            burned_set.add(i)
+            burning_set.remove(i)
+            burning_set |= set(self.__graph[i]) - burned_set
 
     def __diffuse_all(self, seeds: set):
         """
