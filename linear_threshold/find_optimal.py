@@ -88,8 +88,16 @@ def quick_sort4tuple_list(unsorted_list, idx=0, is_ordered_by_ascend=True):
     less = [i for i in unsorted_list if i[idx] <= mid_tuple[idx]]
     greater = [i for i in unsorted_list if i[idx] > mid_tuple[idx]]
     if is_ordered_by_ascend:
-        return quick_sort4tuple_list(less, idx) + [mid_tuple] + quick_sort4tuple_list(greater, idx)
-    return quick_sort4tuple_list(greater, idx, False) + [mid_tuple] + quick_sort4tuple_list(less, idx, False)
+        return (
+            quick_sort4tuple_list(less, idx)
+            + [mid_tuple]
+            + quick_sort4tuple_list(greater, idx)
+        )
+    return (
+        quick_sort4tuple_list(greater, idx, False)
+        + [mid_tuple]
+        + quick_sort4tuple_list(less, idx, False)
+    )
 
 
 def quick_sort_by_recursion(arr):
@@ -130,7 +138,6 @@ def quick_sort_iterative(arr, low, high, idx=None):
 
     # Keep popping from stack while is not empty
     while top >= 0:
-
         # Pop h and l
         high = stack[top]
         top = top - 1
@@ -199,22 +206,56 @@ def random_partition(arr, left, right):
     arr[pivot_idx], arr[right] = arr[right], arr[pivot_idx]
     x = arr[right]
     i = left - 1  # 初始i指向一个空，保证0到i都小于等于 x
-    for j in range(left, right):  # j用来寻找比x小的，找到就和i+1交换，保证i之前的都小于等于x
+    for j in range(
+        left, right
+    ):  # j用来寻找比x小的，找到就和i+1交换，保证i之前的都小于等于x
         if arr[j] <= x:
             i = i + 1
             arr[i], arr[j] = arr[j], arr[i]
-    arr[i + 1], arr[right] = arr[right], arr[i + 1]  # 0到i 都小于等于x ,所以x的最终位置就是i+1
+    arr[i + 1], arr[right] = (
+        arr[right],
+        arr[i + 1],
+    )  # 0到i 都小于等于x ,所以x的最终位置就是i+1
     return i + 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     g = networkx.Graph()
-    custom_ego_list = [(1, 5), (1, 13), (1, 16), (1, 28),
-                       (5, 20), (5, 21), (5, 22), (5, 23), (5, 24), (5, 25), (5, 26), (5, 27),
-                       (13, 2), (13, 3), (13, 4), (13, 6), (13, 7), (13, 8), (13, 9), (13, 10), (13, 11), (13, 12),
-                       (16, 29), (16, 30), (16, 31), (16, 32), (16, 33), (16, 34),
-                       (28, 14), (28, 15), (28, 17), (28, 18), (28, 19)
-                       ]
+    custom_ego_list = [
+        (1, 5),
+        (1, 13),
+        (1, 16),
+        (1, 28),
+        (5, 20),
+        (5, 21),
+        (5, 22),
+        (5, 23),
+        (5, 24),
+        (5, 25),
+        (5, 26),
+        (5, 27),
+        (13, 2),
+        (13, 3),
+        (13, 4),
+        (13, 6),
+        (13, 7),
+        (13, 8),
+        (13, 9),
+        (13, 10),
+        (13, 11),
+        (13, 12),
+        (16, 29),
+        (16, 30),
+        (16, 31),
+        (16, 32),
+        (16, 33),
+        (16, 34),
+        (28, 14),
+        (28, 15),
+        (28, 17),
+        (28, 18),
+        (28, 19),
+    ]
     g.add_edges_from([(1, 2), (1, 3), (2, 3), (3, 4), (3, 5), (4, 5), (4, 6), (5, 6)])
     # g.add_edges_from(custom_ego_list)
     print(find_optimal(g))

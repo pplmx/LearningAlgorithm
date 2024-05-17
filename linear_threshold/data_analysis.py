@@ -28,7 +28,7 @@ def draw_3d(edges_list):
     udg.add_edges_from(edges_list)
     # Get the node positions, set by the Kamada-Kawai layout for 3D graphs
     # layout is a list of three elements lists (the coordinates of nodes):
-    layout = ig.layout('kk_3d')
+    layout = ig.layout("kk_3d")
     nodes_num = ig.vcount()
     edges_num = ig.ecount()
 
@@ -42,40 +42,48 @@ def draw_3d(edges_list):
     y_edge = []
     z_edge = []
     for edge in edges_list:
-        x_edge += [layout[edge[0]][0], layout[edge[1]][0], None]  # x-coordinates of edge ends
+        x_edge += [
+            layout[edge[0]][0],
+            layout[edge[1]][0],
+            None,
+        ]  # x-coordinates of edge ends
         y_edge += [layout[edge[0]][1], layout[edge[1]][1], None]
         z_edge += [layout[edge[0]][2], layout[edge[1]][2], None]
 
-    trace1 = go.Scatter3d(x=x_edge,
-                          y=y_edge,
-                          z=z_edge,
-                          mode='lines',
-                          line=dict(color='rgb(125,125,125)', width=1),
-                          hoverinfo='none'
-                          )
+    trace1 = go.Scatter3d(
+        x=x_edge,
+        y=y_edge,
+        z=z_edge,
+        mode="lines",
+        line=dict(color="rgb(125,125,125)", width=1),
+        hoverinfo="none",
+    )
 
-    trace2 = go.Scatter3d(x=x_node,
-                          y=y_node,
-                          z=z_node,
-                          mode='markers',
-                          name='actors',
-                          marker=dict(symbol='circle',
-                                      size=6,
-                                      color=node_color,
-                                      colorscale='Viridis',
-                                      line=dict(color='rgb(50,50,50)', width=0.5)
-                                      ),
-                          text=node_name,
-                          hoverinfo='text'
-                          )
+    trace2 = go.Scatter3d(
+        x=x_node,
+        y=y_node,
+        z=z_node,
+        mode="markers",
+        name="actors",
+        marker=dict(
+            symbol="circle",
+            size=6,
+            color=node_color,
+            colorscale="Viridis",
+            line=dict(color="rgb(50,50,50)", width=0.5),
+        ),
+        text=node_name,
+        hoverinfo="text",
+    )
 
-    axis = dict(showbackground=False,
-                showline=False,
-                zeroline=False,
-                showgrid=False,
-                showticklabels=False,
-                title=''
-                )
+    axis = dict(
+        showbackground=False,
+        showline=False,
+        zeroline=False,
+        showgrid=False,
+        showticklabels=False,
+        title="",
+    )
 
     layout = go.Layout(
         title="3D visualization",
@@ -87,22 +95,20 @@ def draw_3d(edges_list):
             yaxis=dict(axis),
             zaxis=dict(axis),
         ),
-        margin=dict(
-            t=100
-        ),
-        hovermode='closest',
+        margin=dict(t=100),
+        hovermode="closest",
     )
 
     data = [trace1, trace2]
     fig = go.Figure(data=data, layout=layout)
 
     # py.iplot(fig, filename='Les-Miserables')
-    iplot(fig, filename='3D undirected graph')
+    iplot(fig, filename="3D undirected graph")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     mds_start = datetime.now()
-    edges_data = read_data('../data/CA-GrQc.txt')
+    edges_data = read_data("../data/CA-GrQc.txt")
     mds_end = datetime.now()
     print("Read Data cost: {}s".format(mds_end - mds_start))
 

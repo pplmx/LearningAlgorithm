@@ -39,7 +39,9 @@ if the graph is a directed graph
 
 
 class LinearThresholdModel:
-    def __init__(self, graph, seeds: set = None, burning_seq: list = None, steps: int = 0):
+    def __init__(
+        self, graph, seeds: set = None, burning_seq: list = None, steps: int = 0
+    ):
         self.__graph = graph
         self.__seeds = seeds
         self.__burning_seq = burning_seq
@@ -48,7 +50,9 @@ class LinearThresholdModel:
 
     def __init_model(self):
         if type(self.__graph) == nx.MultiGraph or type(self.__graph) == nx.MultiDiGraph:
-            raise Exception("LinearThresholdModel is not defined for graphs with multi-edges.")
+            raise Exception(
+                "LinearThresholdModel is not defined for graphs with multi-edges."
+            )
 
         # is directed or not
         if self.__graph.is_directed():
@@ -141,7 +145,9 @@ class LinearThresholdModel:
         burned_set = set()
         burning_set = set()
         # Get a list reversely ordered by degree. e.g. [(2, 3), (4, 2), (3, 2), (1, 1)]
-        degree_list = sorted(list(self.__graph.degree), key=lambda x: (x[1], x[0]), reverse=True)
+        degree_list = sorted(
+            list(self.__graph.degree), key=lambda x: (x[1], x[0]), reverse=True
+        )
         for idx, val in enumerate(degree_list):
             if val[0] not in burned_set and val[0] not in burning_set:
                 minimal_burning_sequence_list.append(val[0])
@@ -165,7 +171,11 @@ class LinearThresholdModel:
             if node not in successor_list:
                 continue
             predecessor = next_pre_dict[node]
-            if node not in minimal_dominating_set and node not in covered_set and predecessor not in minimal_dominating_set:
+            if (
+                node not in minimal_dominating_set
+                and node not in covered_set
+                and predecessor not in minimal_dominating_set
+            ):
                 minimal_dominating_set.add(predecessor)
                 # get predecessor's neighbors, i.e. the nodes whose are covered by predecessor
                 covered_set |= set(self.__graph[predecessor])
@@ -194,7 +204,9 @@ class LinearThresholdModel:
         next_seeds = set(seeds)
         layer_i_nodes = [[i for i in next_seeds]]
         while len(next_seeds) < len(self.__graph):
-            next_seeds, activated_nodes_of_this_round = self.__diffuse_one_round(next_seeds)
+            next_seeds, activated_nodes_of_this_round = self.__diffuse_one_round(
+                next_seeds
+            )
             layer_i_nodes.append(activated_nodes_of_this_round)
         return layer_i_nodes
 
@@ -209,7 +221,9 @@ class LinearThresholdModel:
         layer_i_nodes = [[i for i in next_seeds]]
         while steps > 0 and len(next_seeds) < len(self.__graph):
             origin_len = len(next_seeds)
-            next_seeds, activated_nodes_of_this_round = self.__diffuse_one_round(next_seeds)
+            next_seeds, activated_nodes_of_this_round = self.__diffuse_one_round(
+                next_seeds
+            )
             layer_i_nodes.append(activated_nodes_of_this_round)
             # if all nodes had been diffused, break the loop
             if len(next_seeds) == origin_len:
@@ -276,13 +290,13 @@ class LinearThresholdModel:
         if not self.__graph.is_directed():
             raise Exception("Graph Error: The graph must be the directed graph.")
         influence_factor = 0
-        for u, v, influence in self.__graph.in_edges(node, data='influence'):
+        for u, v, influence in self.__graph.in_edges(node, data="influence"):
             influence_factor += influence
         # calculate the sum of the weights of all the in degrees of node
         # directed_graph.in_degree(node, weight="influence")
         # calculate the sum of the weights of all the out degrees of node
         # directed_graph.out_degree(node, weight="influence")
-        if influence_factor >= self.__graph.nodes[node]['threshold']:
+        if influence_factor >= self.__graph.nodes[node]["threshold"]:
             return True
         return False
 
@@ -314,11 +328,15 @@ def init_threshold4directed_graph(directed_graph):
     >> list(graph)
     [0, 1, 2]
     """
-    for i, threshold in directed_graph.nodes(data='threshold'):
+    for i, threshold in directed_graph.nodes(data="threshold"):
         if threshold is None:
-            directed_graph.nodes[i]['threshold'] = 0.5
+            directed_graph.nodes[i]["threshold"] = 0.5
         elif threshold > 1:
-            raise Exception("Node error: The threshold of node-{} cannot be larger than 1.".format(i))
+            raise Exception(
+                "Node error: The threshold of node-{} cannot be larger than 1.".format(
+                    i
+                )
+            )
 
 
 def init_influence4directed_graph(directed_graph):
@@ -327,7 +345,7 @@ def init_influence4directed_graph(directed_graph):
     >> [e for e in graph.edges]
     [(0, 1), (1, 2), (2, 3)]
     """
-    for u, v, influence in directed_graph.edges(data='influence'):
+    for u, v, influence in directed_graph.edges(data="influence"):
         if influence is None:
             # ========== influence = out_degree / out_degree_sum ==========
             # # noinspection PyCallingNonCallable
@@ -341,16 +359,22 @@ def init_influence4directed_graph(directed_graph):
 
             # ========== influence = 1 / in_degree ==========
             # noinspection PyCallingNonCallable
-            directed_graph[u][v]['influence'] = 1 / directed_graph.in_degree(v)
+            directed_graph[u][v]["influence"] = 1 / directed_graph.in_degree(v)
         elif influence > 1:
-            raise Exception("Edge error: The influence of edge({}, {}) cannot be larger than 1.".format(u, v))
+            raise Exception(
+                "Edge error: The influence of edge({}, {}) cannot be larger than 1.".format(
+                    u, v
+                )
+            )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     dg = nx.DiGraph()
-    dg.add_weighted_edges_from([(1, 2, 0.5), (1, 3, 1.1), (4, 1, 2.3), (4, 2, 0.9)], weight='influence')
+    dg.add_weighted_edges_from(
+        [(1, 2, 0.5), (1, 3, 1.1), (4, 1, 2.3), (4, 2, 0.9)], weight="influence"
+    )
     influence_factor_ = 0
-    for u_, v_, influence_ in dg.in_edges(3, data='influence'):
+    for u_, v_, influence_ in dg.in_edges(3, data="influence"):
         influence_factor_ += influence_
     # The following values are the same
     print(influence_factor_)
