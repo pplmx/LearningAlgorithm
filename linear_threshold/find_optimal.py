@@ -4,7 +4,7 @@
 import networkx
 from numpy import random
 
-from linear_threshold.LT_model import LinearThresholdModel
+from .LT_model import LinearThresholdModel
 
 
 def find_optimal(graph):
