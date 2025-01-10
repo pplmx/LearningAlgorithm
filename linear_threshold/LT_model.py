@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import copy
 
@@ -333,9 +332,7 @@ def init_threshold4directed_graph(directed_graph):
             directed_graph.nodes[i]["threshold"] = 0.5
         elif threshold > 1:
             raise Exception(
-                "Node error: The threshold of node-{} cannot be larger than 1.".format(
-                    i
-                )
+                f"Node error: The threshold of node-{i} cannot be larger than 1."
             )
 
 
@@ -362,9 +359,7 @@ def init_influence4directed_graph(directed_graph):
             directed_graph[u][v]["influence"] = 1 / directed_graph.in_degree(v)
         elif influence > 1:
             raise Exception(
-                "Edge error: The influence of edge({}, {}) cannot be larger than 1.".format(
-                    u, v
-                )
+                f"Edge error: The influence of edge({u}, {v}) cannot be larger than 1."
             )
 
 

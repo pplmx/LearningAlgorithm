@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 from datetime import datetime
 
 import igraph
@@ -110,13 +109,13 @@ if __name__ == "__main__":
     mds_start = datetime.now()
     edges_data = read_data("../data/CA-GrQc.txt")
     mds_end = datetime.now()
-    print("Read Data cost: {}s".format(mds_end - mds_start))
+    print(f"Read Data cost: {mds_end - mds_start}s")
 
     mds_start = datetime.now()
     graph = nx.Graph()
     graph.add_edges_from(edges_data)
     mds_end = datetime.now()
-    print("Build graph by networkx cost: {}s".format(mds_end - mds_start))
+    print(f"Build graph by networkx cost: {mds_end - mds_start}s")
 
     # custom_ego_list = [(1, 5), (1, 13), (1, 16), (1, 28),
     #                    (5, 20), (5, 21), (5, 22), (5, 23), (5, 24), (5, 25), (5, 26), (5, 27),
@@ -136,13 +135,13 @@ if __name__ == "__main__":
     mbs = lt_model.find_mbs()
     mbs_end = datetime.now()
 
-    print("Find mds cost: {}s".format(mds_end - mds_start))
-    print("The minimal dominating set: {}".format(mds))
-    print("Its length: {}".format(len(mds)))
+    print(f"Find mds cost: {mds_end - mds_start}s")
+    print(f"The minimal dominating set: {mds}")
+    print(f"Its length: {len(mds)}")
 
-    print("Find mbs cost: {}s".format(mbs_end - mbs_start))
-    print("The minimal burning set: {}".format(mbs))
-    print("Its length: {}".format(len(mbs)))
+    print(f"Find mbs cost: {mbs_end - mbs_start}s")
+    print(f"The minimal burning set: {mbs}")
+    print(f"Its length: {len(mbs)}")
 
     # lt_model.set_burning_seq([100, 334])
     # print(lt_model.link_the_fire())
